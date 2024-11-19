@@ -1,0 +1,18 @@
+[package]
+name = "m-bus-parser-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Tomasz Komanski"]
+
+[profile.release]
+# opt-level = 'z'   # Optimize for size
+opt-level = 3   # Optimize for speed
+lto = true        # Enable Link Time Optimization
+codegen-units = 1 # Reduce codegen units to improve optimizations
+
+[dependencies]
+m-bus-parser = { path = "..", version = "0.1.0" }
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+colored = "2.1"
