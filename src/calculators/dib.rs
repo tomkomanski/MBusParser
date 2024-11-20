@@ -1,7 +1,6 @@
 use core::fmt;
 use std::collections::VecDeque;
-use serde::Serializer;
-use serde_derive::Serialize;
+use serde::ser::{Serialize, Serializer, SerializeStruct};
 use crate::matrices::errors::*;
 use crate::tools::tools::*;
 
@@ -83,79 +82,53 @@ impl fmt::Display for DibDataType {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq)]
 pub struct Dib {
-    #[serde(rename = "Dif byte", serialize_with = "serialize_dif_byte")]
     pub dif_byte: u8,
-    #[serde(rename = "Dife bytes", serialize_with = "serialize_dife_bytes")]
     pub dife_bytes: Vec<u8>,
-    #[serde(skip_serializing, skip_deserializing)]
     extension_bit: bool,
-    #[serde(rename = "Storage number", serialize_with = "serialize_storage_tariff_subunit")]
     pub storage_number: Option<u32>,
-    #[serde(rename = "Tariff", serialize_with = "serialize_storage_tariff_subunit")]
     pub tariff: Option<u32>,
-    #[serde(rename = "Subunit", serialize_with = "serialize_storage_tariff_subunit")]
     pub subunit: Option<u32>,
-    #[serde(rename = "Function field", serialize_with = "serialize_function_field")]
     pub function_field: Option<DibFunctionField>,
-    #[serde(rename = "Data type", serialize_with = "serialize_data_type")]
     pub data_type: DibDataType,
-    #[serde(skip_serializing)]
     pub data_length: u8,
 }
 
-fn serialize_dif_byte<S>(x: &u8, s: S) -> Result<S::Ok, S::Error>
+impl Serialize for Dib {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer, { 
-            let string: String = byte_to_hex_string(x);
-            s.serialize_str(&string)
+        S: Serializer,
+    {
+        let mut state: <S as Serializer>::SerializeStruct = serializer.serialize_struct("Dib", 7)?;
+
+        state.serialize_field("Dif byte", &byte_to_hex_string(&self.dif_byte))?;
+
+        if self.dife_bytes.is_empty() {
+            state.serialize_field("Dife bytes", &Option::<String>::None)?;
+        }
+        else {
+            state.serialize_field("Dife bytes", &array_bytes_to_hex_string(&self.dife_bytes))?;
         }
 
-fn serialize_dife_bytes<S>(x: &Vec<u8>, s: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer, {
-            if x.is_empty() {
-                s.serialize_none()
-            }
-            else {          
-                let hex_string: String = array_bytes_to_hex_string(&x);
-                s.serialize_str(&hex_string)
-            }
-        }
-    
-fn serialize_storage_tariff_subunit<S>(x: &Option<u32>, s: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer, {
-            match x {
-                Some(x) => {
-                    s.serialize_u32(*x)
-                },
-                None => {
-                    s.serialize_none()
-                }
+        state.serialize_field("Storage number", &self.storage_number)?;
+        state.serialize_field("Tariff", &self.tariff)?;
+        state.serialize_field("Subunit", &self.subunit)?;
+
+        match &self.function_field {
+            Some(x) => {
+                state.serialize_field("Function field", &x.to_string())?;
+            },
+            None => {
+                state.serialize_field("Function field", &Option::<String>::None)?;
             }
         }
 
-fn serialize_function_field<S>(x: &Option<DibFunctionField>, s: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer, { 
-            match x {
-                Some(x) => {
-                    s.serialize_str(&x.to_string())
-                },
-                None => {
-                    s.serialize_none()
-                }
-            }
-        }
+        state.serialize_field("Data type", &self.data_type.to_string())?;
 
-fn serialize_data_type<S>(x: &DibDataType, s: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer, { 
-            let string: String =  x.to_string();
-            s.serialize_str(&string)
-        }
+        state.end()
+    }
+}
 
 impl Dib {
     pub fn calculate_dib(data: &mut VecDeque<u8>) -> Result<Dib, ParserError> {
