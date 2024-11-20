@@ -261,7 +261,7 @@ pub enum DeviceType {
 }
 
 impl DeviceType {
-    pub fn get_type(input: u8) -> DeviceType {
+    pub fn new(input: u8) -> DeviceType {
         match input {
             0x00 => DeviceType::Other,
             0x01 => DeviceType::OilMeter,

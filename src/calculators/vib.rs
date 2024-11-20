@@ -75,14 +75,14 @@ impl Serialize for Vib {
 }
 
 impl Vib {
-    pub fn new(data: &mut VecDeque<u8>, manufacturer: &Option<[u8; 2]>) -> Result<Self, ParserError> {
+    pub fn new(data: &mut VecDeque<u8>, manufacturer_bytes: &Option<[u8; 2]>) -> Result<Self, ParserError> {
         if data.len() < 1 {
             return Err(ParserError::VibCalculatorError);
         }
 
-        let specific_manufacturer: Manufacturer = Manufacturer::get_manufacturer(manufacturer);
+        let specific_manufacturer: Manufacturer = Manufacturer::new(manufacturer_bytes);
 
-        let primary_vif: VifVife = VifVife::get_vif_primary(data.pop_front().unwrap());
+        let primary_vif: VifVife = VifVife::new_vif_primary(data.pop_front().unwrap());
 
         let mut vib: Vib = Vib {
             vif_byte: primary_vif.byte,
@@ -113,31 +113,31 @@ impl Vib {
         
         // VIFE extension table 0xEF after primary VIF
         else if vib.extension.is_some_and(|x: u8| x == 0xEF) {
-            if !Self::get_extension_ef_after_primary_vif(data, &mut vib) {
+            if !vib.get_extension_ef_after_primary_vif(data) {
                 return Err(ParserError::VibCalculatorError);
             }
         }
         // VIFE extension table 0xFB after primary VIF
         else if vib.extension.is_some_and(|x: u8| x == 0xFB) {
-            if !Self::get_extension_fb_after_primary_vif(data, &mut vib) {
+            if !vib.get_extension_fb_after_primary_vif(data) {
                 return Err(ParserError::VibCalculatorError);
             }
         }
         // VIFE extension table 0xFD after primary VIF
         else if vib.extension.is_some_and(|x: u8| x == 0xFD) {
-            if !Self::get_extension_fd_after_primary_vif(data, &mut vib) {
+            if !vib.get_extension_fd_after_primary_vif(data) {
                 return Err(ParserError::VibCalculatorError);
             }
         }
 
         // VIFE combinable
         if vib.extension.is_some() {
-            if !Self::get_combinable_vife(data, &mut vib) {
+            if !vib.get_combinable_vife(data) {
                 return Err(ParserError::VibCalculatorError);
             }
 
             while vib.extension.is_some_and(|x: u8| x != 0x7F && x != 0xFF && x != 0xFC) {
-                if !Self::get_combinable_vife(data, &mut vib) {
+                if !vib.get_combinable_vife(data) {
                     return Err(ParserError::VibCalculatorError);
                 }
             }
@@ -162,7 +162,7 @@ impl Vib {
 
         // VIFE combinable extension table 0xFC after VIFE combinable 
         if vib.extension.is_some_and(|x: u8| x == 0xFC) {
-            if !Self::get_combinable_vife_extension_fc(data, &mut vib) {
+            if !vib.get_combinable_vife_extension_fc(data) {
                 return Err(ParserError::VibCalculatorError);
             }
         }
@@ -181,111 +181,113 @@ impl Vib {
             let text_bytes: Vec<u8> = data.drain(..string_length as usize).collect();
             
             vib.vife_bytes.extend(&text_bytes);
-            let text_bytes_reversed: Vec<u8> = text_bytes.iter().copied().rev().collect();
-            let text_result: Result<String, std::string::FromUtf8Error> = String::from_utf8(text_bytes_reversed);
-            if text_result.is_err() {
+            let text_bytes_reversed: Vec<u8> = text_bytes.into_iter().rev().collect();
+
+            if let Ok(text_result) = String::from_utf8(text_bytes_reversed) {
+                vib.data_type = Some(VibDataType::Numeric);
+                vib.description = (text_result.to_string() + " " + &vib.description).trim().to_string();
+            }
+            else {
                 return Err(ParserError::VibCalculatorError);
             }
-            vib.data_type = Some(VibDataType::Numeric);
-            vib.description = (text_result.unwrap().to_string() + " " + &vib.description).trim().to_string();
         }
         
         return Ok(vib);
     }
 
-    fn get_extension_ef_after_primary_vif(data: &mut VecDeque<u8>, vib: &mut Vib) -> bool {
+    fn get_extension_ef_after_primary_vif(&mut self, data: &mut VecDeque<u8>) -> bool {
         if data.len() < 1 {
             return false;
         }
         let vife_byte: u8 = data.pop_front().unwrap();
         
-        let vife: VifVife = VifVife::get_vife_ef(vife_byte);
+        let vife: VifVife = VifVife::new_vife_ef(vife_byte);
 
-        vib.vife_bytes.push(vife_byte);
-        vib.extension = vife.extension;   
-        vib.data_type = vife.data_type;
-        vib.unit = vife.unit.to_string();
-        vib.description = vife.description.to_string();
-        vib.magnitude = vife.magnitude;
+        self.vife_bytes.push(vife_byte);
+        self.extension = vife.extension;   
+        self.data_type = vife.data_type;
+        self.unit = vife.unit.to_string();
+        self.description = vife.description.to_string();
+        self.magnitude = vife.magnitude;
 
         return true;
     }
 
-    fn get_extension_fb_after_primary_vif(data: &mut VecDeque<u8>, vib: &mut Vib) -> bool {
+    fn get_extension_fb_after_primary_vif(&mut self, data: &mut VecDeque<u8>) -> bool {
         if data.len() < 1 {
             return false;
         }
         let vife_byte: u8 = data.pop_front().unwrap();
         
-        let vife: VifVife = VifVife::get_vife_fb(vife_byte);
+        let vife: VifVife = VifVife::new_vife_fb(vife_byte);
 
-        vib.vife_bytes.push(vife_byte);
-        vib.extension = vife.extension;   
-        vib.data_type = vife.data_type;
-        vib.unit = vife.unit.to_string();
-        vib.description = vife.description.to_string();
-        vib.magnitude = vife.magnitude;
+        self.vife_bytes.push(vife_byte);
+        self.extension = vife.extension;   
+        self.data_type = vife.data_type;
+        self.unit = vife.unit.to_string();
+        self.description = vife.description.to_string();
+        self.magnitude = vife.magnitude;
 
         return true;
     }
 
-    fn get_extension_fd_after_primary_vif(data: &mut VecDeque<u8>, vib: &mut Vib) -> bool {
+    fn get_extension_fd_after_primary_vif(&mut self, data: &mut VecDeque<u8>) -> bool {
         if data.len() < 1 {
             return false;
         }
         let vife_byte: u8 = data.pop_front().unwrap();
         
-        let vife: VifVife = VifVife::get_vife_fd(vife_byte);
+        let vife: VifVife = VifVife::new_vife_fd(vife_byte);
 
-        vib.vife_bytes.push(vife_byte);
-        vib.extension = vife.extension;     
-        vib.data_type = vife.data_type;
-        vib.unit = vife.unit.to_string();
-        vib.description = vife.description.to_string();
-        vib.magnitude = vife.magnitude;
+        self.vife_bytes.push(vife_byte);
+        self.extension = vife.extension;     
+        self.data_type = vife.data_type;
+        self.unit = vife.unit.to_string();
+        self.description = vife.description.to_string();
+        self.magnitude = vife.magnitude;
 
         return true;
     }
 
-    fn get_combinable_vife(data: &mut VecDeque<u8>, vib: &mut Vib) -> bool {
+    fn get_combinable_vife(&mut self, data: &mut VecDeque<u8>) -> bool {
         if data.len() < 1 {
             return false;
         }
         let vife_byte: u8 = data.pop_front().unwrap();
 
-        let vife: VifVife = VifVife::get_vife_combinable(vife_byte);
+        let vife: VifVife = VifVife::new_vife_combinable(vife_byte);
 
-        vib.vife_bytes.push(vife_byte);
-        vib.extension = vife.extension;
+        self.vife_bytes.push(vife_byte);
+        self.extension = vife.extension;
 
-        if vib.extension.is_some_and(|x: u8| x == 0x7F || x == 0xFF || x == 0xFC) {
+        if self.extension.is_some_and(|x: u8| x == 0x7F || x == 0xFF || x == 0xFC) {
             return true;
         }
 
-        vib.description = (vib.description.to_string() + " " + vife.description).trim().to_string();
+        self.description = (self.description.to_string() + " " + vife.description).trim().to_string();
 
         if vife.magnitude.is_some() {
-            vib.magnitude = vife.magnitude;
+            self.magnitude = vife.magnitude;
         }
 
         if vife.data_type.is_some() {
-            vib.data_type = vife.data_type;
+            self.data_type = vife.data_type;
         }
         
         return true;
     }
 
-    fn get_combinable_vife_extension_fc(data: &mut VecDeque<u8>, vib: &mut Vib) -> bool {
+    fn get_combinable_vife_extension_fc(&mut self, data: &mut VecDeque<u8>) -> bool {
         if data.len() < 1 {
             return false;
         }
         let vife_byte: u8 = data.pop_front().unwrap();
         
-        let vife: VifVife = VifVife::get_vife_combinable_fc(vife_byte);
+        let vife: VifVife = VifVife::new_vife_combinable_fc(vife_byte);
 
-        vib.vife_bytes.push(vife_byte);
-        vib.extension = vife.extension; 
-        vib.description = (vib.description.to_string() + " " + vife.description).trim().to_string();
+        self.vife_bytes.push(vife_byte);
+        self.extension = vife.extension; 
+        self.description = (self.description.to_string() + " " + vife.description).trim().to_string();
 
         return true;
     }

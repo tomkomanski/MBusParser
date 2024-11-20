@@ -6,7 +6,7 @@ pub enum Manufacturer {
 }
 
 impl Manufacturer {
-    pub fn get_manufacturer (manufacturer: &Option<[u8; 2]>) -> Manufacturer {
+    pub fn new (manufacturer: &Option<[u8; 2]>) -> Self {
         match manufacturer {
             Some([0x42, 0x04]) => Manufacturer::Abb,
             Some([0xA3, 0x4C]) => Manufacturer::Schneider,

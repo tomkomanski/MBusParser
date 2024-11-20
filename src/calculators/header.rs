@@ -115,7 +115,7 @@ impl Header {
             header.access_number = data.pop_front();
             header.status = data.pop_front();
             header.configuration = Some([data.pop_front().unwrap(), *data.front().unwrap()]);
-            header.encryption = Some(EncryptionMethod::get_encryption(data.pop_front().unwrap()));
+            header.encryption = Some(EncryptionMethod::new(data.pop_front().unwrap()));
             return Ok(header);
         }
         else if header.header_type == HeaderType::Long {
@@ -126,7 +126,7 @@ impl Header {
             header.access_number = data.pop_front();
             header.status = data.pop_front();
             header.configuration = Some([data.pop_front().unwrap(), *data.front().unwrap()]);
-            header.encryption = Some(EncryptionMethod::get_encryption(data.pop_front().unwrap()));
+            header.encryption = Some(EncryptionMethod::new(data.pop_front().unwrap()));
             return Ok(header);
         }
         else {
@@ -135,7 +135,7 @@ impl Header {
     }
 
     fn get_manufacturer(&self) -> Option<String> {
-        if let Some(bytes) = &self.manufacturer {
+        if let Some(bytes) = self.manufacturer {
             let input: u16 = u16::from_le_bytes(bytes.clone());
 
             let first_letter: char = ((input / (32 * 32)) + 64) as u8 as char;
@@ -152,14 +152,14 @@ impl Header {
             manufacturer.push(third_letter);
 
             return Some(manufacturer);
-            }
+        }
         else {
             return None;
         }
     }
 
     fn get_status_description(&self) -> Option<String> {
-        if let Some(byte) = &self.status {
+        if let Some(byte) = self.status {
             let mut status: String = String::new();
 
             let bit0: bool = ((byte >> 0) & 0x01) == 1;

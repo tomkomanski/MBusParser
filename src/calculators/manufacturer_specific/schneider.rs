@@ -7,7 +7,7 @@ pub fn get_manufacturer_specific_vife_after_primary_vif (data: &mut VecDeque<u8>
     }
     let vife_byte: u8 = data.pop_front().unwrap();
 
-    let vife: VifVife = VifVife::get_vife_schneider(vife_byte);
+    let vife: VifVife = VifVife::new_vife_schneider(vife_byte);
 
     vib.vife_bytes.push(vife_byte);
     vib.extension = vife.extension;    
@@ -40,7 +40,7 @@ pub fn get_manufacturer_specific_vife_after_combinable_vife(data: &mut VecDeque<
     }
     let vife_byte: u8 = data.pop_front().unwrap();
 
-    let vife: VifVife = VifVife::get_vife_schneider(vife_byte);
+    let vife: VifVife = VifVife::new_vife_schneider(vife_byte);
 
     vib.vife_bytes.push(vife_byte);
     vib.extension = vife.extension; 

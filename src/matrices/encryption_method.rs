@@ -21,7 +21,7 @@ pub enum EncryptionMethod {
 }
 
 impl EncryptionMethod {
-    pub fn get_encryption(byte: u8) -> EncryptionMethod {
+    pub fn new(byte: u8) -> EncryptionMethod {
         let byte: u8 = byte & 0xF;
         match byte {
             0x00 => EncryptionMethod::None,

@@ -55,7 +55,7 @@ pub fn parse_telegram(frame: &str, decryption_key: &str) -> String {
 
                 // Post-processing humanize device type
                 if datagram.header.device_type.is_some() {
-                    datagram.header.device_type_hum = Some(DeviceType::get_type(datagram.header.device_type.unwrap()).to_string());
+                    datagram.header.device_type_hum = Some(DeviceType::new(datagram.header.device_type.unwrap()).to_string());
                 }
 
                 parser_result.datagram = Some(datagram);

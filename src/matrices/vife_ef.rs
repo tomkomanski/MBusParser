@@ -1,7 +1,7 @@
 use crate::calculators::vib::*;
 
 impl <'a> VifVife<'a> {
-    pub fn get_vife_ef(byte: u8) -> Self {   
+    pub fn new_vife_ef(byte: u8) -> Self {   
         let vife_byte_without_extension: u8 = byte & 0x7F;
         let mut extension: Option<u8> = None;
         if ((byte & 0x80) >> 7) == 1 {
