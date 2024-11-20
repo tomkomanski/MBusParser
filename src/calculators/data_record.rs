@@ -1,43 +1,49 @@
 use std::collections::VecDeque;
-use serde_derive::Serialize;
-use serde::Serializer;
+use serde::ser::{Serialize, Serializer, SerializeStruct};
 use crate::calculators::dib::*;
 use crate::calculators::lvar::*;
 use crate::calculators::vib::*;
 use crate::matrices::errors::*;
 use crate::tools::tools::*;
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq)]
 pub struct DataRecord {
-    #[serde(rename = "Record number")]
     pub record_number: u8,
-    #[serde(rename = "Dib")]
     pub dib: Dib,
-    #[serde(rename = "Vib")]
     pub vib: Option<Vib>,
-    #[serde(rename = "Data", serialize_with = "serialize_data")]
     pub data: Option<Vec<u8>>,
-    #[serde(rename = "Numeric value")]
     pub numeric_value: Option<f64>,
-    #[serde(rename = "Text value")]
     pub text_value: Option<String>,
-    #[serde(rename = "Comment")]
     pub comment: Option<String>,
 }
 
-fn serialize_data<S>(x: &Option<Vec<u8>>, s: S) -> Result<S::Ok, S::Error>
+impl Serialize for DataRecord {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: Serializer, { 
-            match x {
-                Some(x) => {
-                    let string: String = array_bytes_to_hex_string(x);
-                    s.serialize_str(&string)
-                },
-                None => {
-                    s.serialize_none()
-                }
+        S: Serializer,
+    {
+        let mut state: <S as Serializer>::SerializeStruct = serializer.serialize_struct("Data records", 7)?;
+
+        state.serialize_field("Record number", &self.record_number)?;
+        state.serialize_field("Dib", &self.dib)?;
+        state.serialize_field("Vib", &self.vib)?;
+
+        match &self.data {
+            Some(x) => {
+                state.serialize_field("Data", &array_bytes_to_hex_string(x))?;
+            },
+            None => {
+                state.serialize_field("Data", &Option::<Vec<u8>>::None)?;
             }
         }
+
+        state.serialize_field("Numeric value", &self.numeric_value)?;
+        state.serialize_field("Text value", &self.text_value)?;
+        state.serialize_field("Comment", &self.comment)?;
+
+        state.end()
+    }
+}
 
 impl DataRecord {
     pub fn calculate_data_record(data: &mut VecDeque<u8>, manufacturer: &Option<[u8; 2]>) -> Result<Option<DataRecord>, ParserError>{
