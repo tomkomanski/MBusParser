@@ -47,7 +47,7 @@ impl Serialize for DataRecord {
 
 impl DataRecord {
     pub fn calculate_data_record(data: &mut VecDeque<u8>, manufacturer: &Option<[u8; 2]>) -> Result<Option<DataRecord>, ParserError>{
-        let dib: Result<Dib, ParserError> = Dib::calculate_dib(data);
+        let dib: Result<Dib, ParserError> = Dib::new(data);
         if dib.is_err() {
             return Err(dib.unwrap_err());
         }

@@ -188,7 +188,7 @@ fn test_01_calculate_dib() {
     let data: Vec<u8> = vec![0x01];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x01);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -204,7 +204,7 @@ fn test_02_calculate_dib() {
     let data: Vec<u8> = vec![0x02];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x02);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -220,7 +220,7 @@ fn test_03_calculate_dib() {
     let data: Vec<u8> = vec![0x03];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x03);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -236,7 +236,7 @@ fn test_04_calculate_dib() {
     let data: Vec<u8> = vec![0x04];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x04);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -252,7 +252,7 @@ fn test_12_calculate_dib() {
     let data: Vec<u8> = vec![0x12];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x12);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -268,7 +268,7 @@ fn test_14_calculate_dib() {
     let data: Vec<u8> = vec![0x14];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x14);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -284,7 +284,7 @@ fn test_22_calculate_dib() {
     let data: Vec<u8> = vec![0x22];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x22);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -300,7 +300,7 @@ fn test_0f_calculate_dib() {
     let data: Vec<u8> = vec![0x0F];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x0F);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -316,7 +316,7 @@ fn test_44_calculate_dib() {
     let data: Vec<u8> = vec![0x44];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x44);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -332,7 +332,7 @@ fn test_54_calculate_dib() {
     let data: Vec<u8> = vec![0x54];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x54);
     assert_eq!(dib.dife_bytes, vec![] as Vec<u8>);
@@ -348,7 +348,7 @@ fn test_84_00_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x00];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x00]);
@@ -364,7 +364,7 @@ fn test_84_10_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x10];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x10]);
@@ -380,7 +380,7 @@ fn test_84_20_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x20];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x20]);
@@ -396,7 +396,7 @@ fn test_84_40_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x40];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x40]);
@@ -412,7 +412,7 @@ fn test_84_50_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x50];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x50]);
@@ -428,7 +428,7 @@ fn test_84_60_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x60];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x60]);
@@ -444,7 +444,7 @@ fn test_84_80_40_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0x80, 0x40];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0x80, 0x40]);
@@ -460,7 +460,7 @@ fn test_84_c0_40_calculate_dib() {
     let data: Vec<u8> = vec![0x84, 0xC0, 0x40];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0x84);
     assert_eq!(dib.dife_bytes, vec![0xC0, 0x40]);
@@ -476,7 +476,7 @@ fn test_c4_10_calculate_dib() {
     let data: Vec<u8> = vec![0xC4, 0x10];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0xC4);
     assert_eq!(dib.dife_bytes, vec![0x10]);
@@ -492,7 +492,7 @@ fn test_c4_20_calculate_dib() {
     let data: Vec<u8> = vec![0xC4, 0x20];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0xC4);
     assert_eq!(dib.dife_bytes, vec![0x20]);
@@ -508,7 +508,7 @@ fn test_c4_3b_calculate_dib() {
     let data: Vec<u8> = vec![0xC4, 0x3B];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0xC4);
     assert_eq!(dib.dife_bytes, vec![0x3B]);
@@ -524,7 +524,7 @@ fn test_c4_80_40_calculate_dib() {
     let data: Vec<u8> = vec![0xC4, 0x80, 0x40];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
-    let result: Result<Dib, ParserError> = Dib::calculate_dib(&mut buffer);
+    let result: Result<Dib, ParserError> = Dib::new(&mut buffer);
     let dib: Dib = result.unwrap();
     assert_eq!(dib.dif_byte, 0xC4);
     assert_eq!(dib.dife_bytes, vec![0x80, 0x40]);

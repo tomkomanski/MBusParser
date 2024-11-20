@@ -62,7 +62,7 @@ impl DataRecord {
             
             let increment_mode: u8 = spacing_control_byte >> 6;
             let spacing_unit: u8 = (spacing_control_byte & 0x30) >> 4;
-            let element_data_type: DibDataType = DibDataType::get_data_type(spacing_control_byte & 0x0F);
+            let element_data_type: DibDataType = DibDataType::new(spacing_control_byte & 0x0F);
             let element_length: u8 = DibDataType::get_data_length(&element_data_type);
 
             if (buffer.len() as u8) % element_length != 0 {

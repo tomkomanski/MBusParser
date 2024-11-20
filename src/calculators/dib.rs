@@ -131,13 +131,13 @@ impl Serialize for Dib {
 }
 
 impl Dib {
-    pub fn calculate_dib(data: &mut VecDeque<u8>) -> Result<Dib, ParserError> {
+    pub fn new(data: &mut VecDeque<u8>) -> Result<Dib, ParserError> {
         if data.len() < 1 {
             return Err(ParserError::DibCalculatorError);
         }
 
         let dif_byte: u8 = data.pop_front().unwrap();
-        let data_type: DibDataType = DibDataType::get_data_type(dif_byte);
+        let data_type: DibDataType = DibDataType::new(dif_byte);
         let data_length: u8 = DibDataType::get_data_length(&data_type);
 
         let mut dib: Dib = Dib {
@@ -164,7 +164,7 @@ impl Dib {
             return Ok(dib);
         }
 
-        dib.function_field = Some(DibFunctionField::get_function(dib.dif_byte));
+        dib.function_field = Some(DibFunctionField::new(dib.dif_byte));
         dib.extension_bit = (dib.dif_byte & 0x80) >> 7 == 1;
         dib.storage_number = Some(((dib.dif_byte & 0x40) >> 6) as u32);
 
@@ -205,7 +205,7 @@ impl Dib {
 }
 
 impl DibFunctionField {
-    fn get_function(byte: u8) -> DibFunctionField {
+    fn new(byte: u8) -> DibFunctionField {
         let function_field: u8 = (byte & 0x30) >> 4;
         match function_field {
             0x00 => DibFunctionField::Instantaneous,
@@ -217,7 +217,7 @@ impl DibFunctionField {
 }
 
 impl DibDataType {
-    pub fn get_data_type(byte: u8) -> DibDataType {
+    pub fn new(byte: u8) -> DibDataType {
         if byte & 0x0F == 0x0F {
             match byte {
                 0x0F => DibDataType::SpecialFunctionManufacturerSpecific,
