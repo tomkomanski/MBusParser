@@ -34,9 +34,6 @@ fn main() {
         let frame: &str = frame_input.as_str();
         let key: &str = key_input.as_str();
 
-        //let frame: &str = "685656680846725000410001061507D8E800000C7850004100046D3BACC529041349000000023B0000441349000000426CC12902272D0203FD170C030804FF0A0400040002FF0B000003FF0C3F00B50F00061F2DFF00010201007116";
-        //let key: &str = "";
-
         let result: String = parser::parse_telegram(frame, key);
 
         let parsed_data: Result<ParserResult, serde_json::Error> = serde_json::from_str(&result);
