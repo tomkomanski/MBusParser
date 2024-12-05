@@ -43,17 +43,15 @@ impl TelegramFormat {
 
         if data.len() > 5 && data.len() < 291 && data[1] == 0x44{
             if Self::validate_length_wmbus_format_a(&data) {
-                if Self::validate_crc_wmbus_format_a(&data) {
-                    return Ok(TelegramFormat::LongFrameWMBusFormatA);
-                }
+                Self::validate_crc_wmbus_format_a(&data)?;
+                return Ok(TelegramFormat::LongFrameWMBusFormatA);
             }
         }
 
         if data.len() > 5 && data.len() < 257 && data[1] == 0x44{
             if Self::validate_length_wmbus_format_b(&data) {
-                if Self::validate_crc_wmbus_format_b(&data) {
-                    return Ok(TelegramFormat::LongFrameWMBusFormatB);
-                }
+                Self::validate_crc_wmbus_format_b(&data)?;
+                return Ok(TelegramFormat::LongFrameWMBusFormatB);
             }
         }
 
@@ -90,74 +88,59 @@ impl TelegramFormat {
         return Ok(());
     }
     
-    fn validate_crc_wmbus_format_a(data: &Vec<u8>) -> bool {
+    fn validate_crc_wmbus_format_a(data: &Vec<u8>) -> Result<(), ParserError> {
         let mut buffer: VecDeque<u8> = VecDeque::new();
         buffer.extend(data.iter());
     
         if buffer.len() < 12 {
-            return false;
+            return Err(ParserError::WmbusInvalidCrc(format!("Insufficient data for calculate crc")));
         }
     
         let data_block: Vec<u8> = buffer.drain(..10).collect();
         let given_crc: Vec<u8> = buffer.drain(..2).collect();
     
-        let calculated_crc: Option<Vec<u8>> = calculate_wmbus_crc(&data_block);
-        if calculated_crc.is_some() {
-            if given_crc != calculated_crc.unwrap() {
-                return false;
-            }
-        }
-        else {
-            return false;
+        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        if given_crc != calculated_crc {
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
         }
         
         while buffer.len() >= 18 {
             let data_block: Vec<u8> = buffer.drain(..16).collect();
             let given_crc: Vec<u8> = buffer.drain(..2).collect();
     
-            let calculated_crc: Option<Vec<u8>> = calculate_wmbus_crc(&data_block);
-            if calculated_crc.is_some() {
-                if given_crc != calculated_crc.unwrap() {
-                    return false;
-                }
-            }
-            else {
-                return false;
+            let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+            if given_crc != calculated_crc {
+                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
             }
         }
         
         let remaining_number_of_bytes: usize = buffer.len();
     
         if remaining_number_of_bytes == 0 {
-            return true;
+            return Ok(());
         }
     
         if remaining_number_of_bytes < 3 {
-            return false;
+            return Err(ParserError::WmbusInvalidCrc(format!("Insufficient data for calculate crc")));
         }
     
         let data_block: Vec<u8> = buffer.drain(..remaining_number_of_bytes -2).collect();
         let given_crc: Vec<u8> = buffer.drain(..2).collect();
     
-        let calculated_crc: Option<Vec<u8>> = calculate_wmbus_crc(&data_block);
-        if calculated_crc.is_some() {
-            if given_crc != calculated_crc.unwrap() {
-                return false;
-            }
-        }
-        else {
-            return false;
+        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        if given_crc != calculated_crc {
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
         }
     
-        return true;
+        return Ok(());
     }
     
-    fn validate_crc_wmbus_format_b(data: &Vec<u8>) -> bool {
+    fn validate_crc_wmbus_format_b(data: &Vec<u8>) -> Result<(), ParserError>  {
         let mut buffer: VecDeque<u8> = VecDeque::new();
         buffer.extend(data.iter());
     
         if buffer.len() < 10 {
-            return false;
+            return Err(ParserError::WmbusInvalidCrc(format!("Insufficient data for calculate crc")));
         }
     
         buffer.drain(..10);
@@ -166,41 +149,31 @@ impl TelegramFormat {
             let data_block: Vec<u8> = buffer.drain(..116).collect();
             let given_crc: Vec<u8> = buffer.drain(..2).collect();
     
-            let calculated_crc: Option<Vec<u8>> = calculate_wmbus_crc(&data_block);
-            if calculated_crc.is_some() {
-                if given_crc != calculated_crc.unwrap() {
-                    return false;
-                }
-            }
-            else {
-                return false;
+            let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+            if given_crc != calculated_crc {
+                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
             }
         }
         
         let remaining_number_of_bytes: usize = buffer.len();
     
         if remaining_number_of_bytes == 0 {
-            return true;
+            return Ok(());
         }
     
         if remaining_number_of_bytes < 3 {
-            return false;
+            return Err(ParserError::WmbusInvalidCrc(format!("Insufficient data for calculate crc")));
         }
     
         let data_block: Vec<u8> = buffer.drain(..remaining_number_of_bytes -2).collect();
         let given_crc: Vec<u8> = buffer.drain(..2).collect();
     
-        let calculated_crc: Option<Vec<u8>> = calculate_wmbus_crc(&data_block);
-        if calculated_crc.is_some() {
-            if given_crc != calculated_crc.unwrap() {
-                return false;
-            }
-        }
-        else {
-            return false;
+        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        if given_crc != calculated_crc {
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
         }
     
-        return true;
+        return Ok(());
     }
 }
 

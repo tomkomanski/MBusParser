@@ -17,6 +17,8 @@ pub enum ParserError {
 
     MbusChecksumCalculationError,
     MbusInvalidChecksum(String),
+    WmbusCrcCalculationError,
+    WmbusInvalidCrc(String),
 }
 
 impl fmt::Display for ParserError {
@@ -36,6 +38,8 @@ impl fmt::Display for ParserError {
 
             ParserError::MbusChecksumCalculationError => "M-Bus checksum calculation error",
             ParserError::MbusInvalidChecksum(message) => &("M-Bus invalid checksum: ".to_string() + message),
+            ParserError::WmbusCrcCalculationError => "wM-Bus crc calculation error",
+            ParserError::WmbusInvalidCrc(message) => &("wM-Bus invalid crc: ".to_string() + message),
         };
         write!(f, "{}", system_error)
     }
