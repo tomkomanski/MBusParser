@@ -1,13 +1,15 @@
-pub fn calculate_mbus_cs(data: &[u8]) -> Option<u8> {
+use crate::matrices::errors::*;
+
+pub fn calculate_mbus_cs(data: &[u8]) -> Result<u8, ParserError> {
     if data.len() > 0 {
         let mut cs: u8 = 0;
 
         for n in 0..data.len() {
             cs = cs.wrapping_add(data[n]);
         }
-        return Some(cs);
+        return Ok(cs);
     }
-    return None;
+    return Err(ParserError::MbusChecksumCalculationError);
 }
 
 pub fn calculate_wmbus_crc(data: &[u8]) -> Option<Vec<u8>> {

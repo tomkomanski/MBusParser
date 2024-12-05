@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 use crate::tools::checksum::*;
+use crate::tools::tools::*;
 use crate::matrices::errors::*;
 
 #[derive(Debug, PartialEq)]
@@ -20,17 +21,13 @@ impl TelegramFormat {
         }
 
         if data.len() == 5 && data[0] == 0x10 && data[4] == 0x16 {
-            if Self::validate_cs(&data[1..data.len() -1].to_vec()) {
-                return Err(ParserError::TelegramFormatCalculatorError);
-            }
+            Self::validate_cs(&data[1..data.len() -1].to_vec())?;
         }
 
         if data.len() > 5 && data.len() < 10 && data[0] == 0x68 && data[3] == 0x68 && data[data.len() - 1] == 0x16 {
             if data[1] == 0x03 && data[2] == 0x03 {
                 if Self::validate_length_mbus(&data) {
-                    if Self::validate_cs(&data[4..data.len() -1].to_vec()) {
-                        return Err(ParserError::TelegramFormatCalculatorError);
-                    }
+                    Self::validate_cs(&data[4..data.len() -1].to_vec())?;
                 }
             }
         }
@@ -38,9 +35,8 @@ impl TelegramFormat {
         if data.len() > 5 && data.len() < 262 && data[0] == 0x68 && data[3] == 0x68 && data[data.len() - 1] == 0x16 {
             if data[1] != 0x03 && data[2] != 0x03 && data[1] == data[2] {
                 if Self::validate_length_mbus(&data) {
-                    if Self::validate_cs(&data[4..data.len() -1].to_vec()) {
-                        return Ok(TelegramFormat::LongFrameMBus);
-                    }
+                    Self::validate_cs(&data[4..data.len() -1].to_vec())?;
+                    return Ok(TelegramFormat::LongFrameMBus);
                 }
             }
         }
@@ -83,15 +79,15 @@ impl TelegramFormat {
         return length -1 == data[0] as i16;
     }
     
-    fn validate_cs(data: &Vec<u8>) -> bool {
+    fn validate_cs(data: &Vec<u8>) -> Result<(), ParserError> {
         let given_cs: u8 = data[data.len() -1];
-        let calculated_cs: Option<u8> = calculate_mbus_cs(&data[..data.len() -1].to_vec());
+        let calculated_cs: u8 = calculate_mbus_cs(&data[..data.len() -1].to_vec())?;
     
-        if calculated_cs.is_some() {
-            return given_cs == calculated_cs.unwrap();
+        if given_cs != calculated_cs {
+            return Err(ParserError::MbusInvalidChecksum(format!("{} vs {}", byte_to_hex_string(&given_cs), byte_to_hex_string(&calculated_cs))));
         }
     
-        return false;
+        return Ok(());
     }
     
     fn validate_crc_wmbus_format_a(data: &Vec<u8>) -> bool {

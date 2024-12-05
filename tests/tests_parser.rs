@@ -533,4 +533,14 @@ mod tests_parser {
         let parser_result: String = parse_telegram(&frame, &key);
         assert_eq!(parser_result, datagram);  
     }
+    #[test]
+    fn test_054_cs_error() {
+        let file: String = fs::read_to_string("./tests/test_files/054_cs_error.txt").unwrap();
+        let mut lines: std::str::Lines = file.lines();
+        let frame: &str = lines.next().unwrap();
+        let key: &str = lines.next().unwrap();
+        let datagram: &str = lines.next().unwrap();
+        let parser_result: String = parse_telegram(&frame, &key);
+        assert_eq!(parser_result, datagram);  
+    }
 }

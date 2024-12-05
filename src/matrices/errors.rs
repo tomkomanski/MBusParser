@@ -14,6 +14,9 @@ pub enum ParserError {
     ParserError,
     TelegramFormatCalculatorError,
     VibCalculatorError,
+
+    MbusChecksumCalculationError,
+    MbusInvalidChecksum(String),
 }
 
 impl fmt::Display for ParserError {
@@ -30,6 +33,9 @@ impl fmt::Display for ParserError {
             ParserError::ParserError => "Parser error",
             ParserError::TelegramFormatCalculatorError => "Telegram format calculator error",
             ParserError::VibCalculatorError => "Vib calculator error",
+
+            ParserError::MbusChecksumCalculationError => "M-Bus checksum calculation error",
+            ParserError::MbusInvalidChecksum(message) => &("M-Bus invalid checksum: ".to_string() + message),
         };
         write!(f, "{}", system_error)
     }
