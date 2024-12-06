@@ -53,7 +53,7 @@ fn test_001_calculate_telegram_format() {
     let frame: Vec<u8> = vec![0xE5];
     assert_eq!(
         TelegramFormat::calculate_telegram_format(&frame),
-        Err(ParserError::TelegramFormatCalculatorError)
+        Err(ParserError::TelegramFormatNotSupported)
     );
 }
 #[test]
@@ -61,7 +61,7 @@ fn test_002_calculate_telegram_format() {
     let frame: Vec<u8> = vec![0x10, 0x7B, 0x8B, 0x06, 0x16];
     assert_eq!(
         TelegramFormat::calculate_telegram_format(&frame),
-        Err(ParserError::TelegramFormatCalculatorError)
+        Err(ParserError::TelegramFormatNotSupported)
     );
 }
 #[test]
@@ -69,7 +69,7 @@ fn test_003_calculate_telegram_format() {
     let frame: Vec<u8> = vec![0x68, 0x03, 0x03, 0x68, 0x53, 0x01, 0x51, 0xA5, 0x16];
     assert_eq!(
         TelegramFormat::calculate_telegram_format(&frame),
-        Err(ParserError::TelegramFormatCalculatorError)
+        Err(ParserError::TelegramFormatNotSupported)
     );
 }
 #[test]
@@ -101,6 +101,6 @@ fn test_007_calculate_telegram_format() {
     let frame: Vec<u8> = vec![0x2E, 0x44, 0x01, 0x06, 0x15, 0x30, 0x83, 0x96, 0x01, 0x02, 0xA6, 0x83, 0x96, 0x01, 0x02, 0xA6];
     assert_eq!(
         TelegramFormat::calculate_telegram_format(&frame),
-        Err(ParserError::TelegramFormatCalculatorError)
+        Err(ParserError::WmbusInvalidDatagramLength)
     );
 }

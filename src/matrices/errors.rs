@@ -13,12 +13,15 @@ pub enum ParserError {
     LvarError,
     ParserError,
     TelegramFormatCalculatorError,
+    TelegramFormatNotSupported,
     VibCalculatorError,
 
     MbusChecksumCalculationError,
     MbusInvalidChecksum(String),
     WmbusCrcCalculationError,
     WmbusInvalidCrc(String),
+    MbusInvalidDatagramLength,
+    WmbusInvalidDatagramLength,
 }
 
 impl fmt::Display for ParserError {
@@ -34,12 +37,14 @@ impl fmt::Display for ParserError {
             ParserError::LvarError => "Lvar error",
             ParserError::ParserError => "Parser error",
             ParserError::TelegramFormatCalculatorError => "Telegram format calculator error",
+            ParserError::TelegramFormatNotSupported => "Telegram format not supported",
             ParserError::VibCalculatorError => "Vib calculator error",
-
             ParserError::MbusChecksumCalculationError => "M-Bus checksum calculation error",
             ParserError::MbusInvalidChecksum(message) => &("M-Bus invalid checksum: ".to_string() + message),
             ParserError::WmbusCrcCalculationError => "wM-Bus crc calculation error",
             ParserError::WmbusInvalidCrc(message) => &("wM-Bus invalid crc: ".to_string() + message),
+            ParserError::MbusInvalidDatagramLength => "M-Bus invalid datagram length",
+            ParserError::WmbusInvalidDatagramLength => "wM-Bus invalid datagram length",
         };
         write!(f, "{}", system_error)
     }
