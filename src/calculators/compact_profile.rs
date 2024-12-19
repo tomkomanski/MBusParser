@@ -172,10 +172,10 @@ impl DataRecord {
                     if spacing_unit == 1 {
                         date_time = base_time.checked_add_months(chrono::Months::new((n * 6) as u32)).unwrap();
                     }
-                    if spacing_unit == 2 {
+                    else if spacing_unit == 2 {
                         date_time = base_time.checked_add_months(chrono::Months::new((n * 3) as u32)).unwrap();
                     }
-                    if spacing_unit == 3 {
+                    else if spacing_unit == 3 {
                         date_time = base_time.checked_add_months(chrono::Months::new((n * 1) as u32)).unwrap();
                     }
                 }
