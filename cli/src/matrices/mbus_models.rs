@@ -1,6 +1,4 @@
 use serde_derive::Deserialize;
-use colored::Colorize;
-
 
 #[derive(Debug, PartialEq, Deserialize)]
 pub struct ParserResult {
@@ -145,7 +143,7 @@ pub struct DataRecord {
 
 impl DataRecord {
     pub fn display (&self) {
-        println!("{}{}", "Record number: ".green(), self.record_number.to_string().green());
+        println!("{}{}", "Record number: ", self.record_number.to_string());
         
         print!("{}{}", "Dif byte: ", self.dib.dif_byte);
 
