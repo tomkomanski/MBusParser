@@ -185,7 +185,7 @@ impl Dib {
 
             let subunit_loop: u32 = ((dife_byte & 0x40) >> 6) as u32;
             let tariff_loop: u32 = ((dife_byte & 0x30) >> 4) as u32;
-            let storage_number_loop: u32 = (dife_byte & 0x0f) as u32;
+            let storage_number_loop: u32 = (dife_byte & 0x0F) as u32;
 
             subunit |= subunit_loop << loop_count;
             tariff |= tariff_loop << (loop_count * 2);
