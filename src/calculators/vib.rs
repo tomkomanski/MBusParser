@@ -110,7 +110,6 @@ impl Vib {
             }
             return Ok(vib);
         }
-        
         // VIFE extension table 0xEF after primary VIF
         else if vib.extension.is_some_and(|x: u8| x == 0xEF) {
             if !vib.get_extension_ef_after_primary_vif(data) {
