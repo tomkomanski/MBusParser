@@ -46,14 +46,13 @@ impl TelegramFormat {
             if data.len() < 257 && Self::validate_length_wmbus_format_b(&data).is_ok() && Self::validate_crc_wmbus_format_b(&data).is_ok() {
                 return Ok(TelegramFormat::LongFrameWMBusFormatB);
             }
-
             if Self::validate_length_wmbus_format_a(&data).is_err() || Self::validate_length_wmbus_format_b(&data).is_err() {
                 return Err(ParserError::WmbusInvalidDatagramLength);
             }
-            if Self::validate_crc_wmbus_format_a(&data).is_err() || Self::validate_crc_wmbus_format_b(&data).is_ok() {
+            if Self::validate_length_wmbus_format_a(&data).is_ok() && Self::validate_crc_wmbus_format_a(&data).is_err() {
                 Self::validate_crc_wmbus_format_a(&data)?;
             }
-            if Self::validate_crc_wmbus_format_a(&data).is_ok() || Self::validate_crc_wmbus_format_b(&data).is_err() {
+            if Self::validate_length_wmbus_format_b(&data).is_ok() && Self::validate_crc_wmbus_format_b(&data).is_err() {
                 Self::validate_crc_wmbus_format_b(&data)?;
             }
         }
