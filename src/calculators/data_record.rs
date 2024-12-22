@@ -160,7 +160,7 @@ impl DataRecord {
                    year += 2000; 
                 }
                 else {
-                    let hundred_year: u16 = ((data_record_data[1] & 60) >> 5) as u16;
+                    let hundred_year: u16 = ((data_record_data[1] & 0x3C) >> 5) as u16;
                     year += 1900 + (100 * hundred_year);
                 }
 
