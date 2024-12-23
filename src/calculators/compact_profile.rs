@@ -109,7 +109,7 @@ impl DataRecord {
                 }
                 
                 let element_data_bytes: Vec<u8> = buffer.drain(..element_length as usize).collect();
-                let element_value: Result<Option<f64>, ParserError> = DataRecord::calculate_data(&element_data_type, &element_data_bytes);
+                let element_value: Result<Option<f64>, ParserError> = DataRecord::calculate_data_value(&element_data_type, &element_data_bytes);
                 if !element_value.as_ref().is_ok_and(|x: &Option<f64>| x.is_some()) {
                     break;
                 }

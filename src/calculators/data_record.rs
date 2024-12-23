@@ -249,7 +249,7 @@ impl DataRecord {
         }
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::Numeric) {
-            let dataval: Result<Option<f64>, ParserError> = Self::calculate_data(&data_record.dib.data_type, &data_record_data);
+            let dataval: Result<Option<f64>, ParserError> = Self::calculate_data_value(&data_record.dib.data_type, &data_record_data);
             if dataval.is_err() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
@@ -284,7 +284,7 @@ impl DataRecord {
         return Ok(Some(data_record));
     }
 
-    pub fn calculate_data(data_type: &DibDataType, bytes: &[u8]) -> Result<Option<f64>, ParserError> {
+    pub fn calculate_data_value(data_type: &DibDataType, bytes: &[u8]) -> Result<Option<f64>, ParserError> {
         match data_type {
             DibDataType::NoData => {
                 if bytes.len() != 0 {
