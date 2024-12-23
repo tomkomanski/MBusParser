@@ -16,7 +16,7 @@ impl DataRecord {
         let mut compact_profile_indexes: Vec<usize> = Vec::new();
 
         let mut index: usize = 0;
-        while index != data_records.len() {
+        while index < data_records.len() {
             if data_records[index].vib.as_ref().is_some_and(|x: &Vib| x.data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::CompactProfile)) {
                 compact_profile_indexes.push(index);
             }
