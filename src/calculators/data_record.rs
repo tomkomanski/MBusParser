@@ -288,19 +288,19 @@ impl DataRecord {
         match data_type {
             DibDataType::NoData => {
                 if bytes.len() != 0 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 return Ok(None);
             }
             DibDataType::Data8BitInteger => {
                 if bytes.len() != 1 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 1], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = i8::from_le_bytes(bytes.unwrap()) as f64;
@@ -309,12 +309,12 @@ impl DataRecord {
             }
             DibDataType::Data16BitInteger => {
                 if bytes.len() != 2 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 2], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = i16::from_le_bytes(bytes.unwrap()) as f64;
@@ -323,12 +323,12 @@ impl DataRecord {
             },
             DibDataType::Data24BitInteger => {
                 if bytes.len() != 3 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 3], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_24_to_int_32(&bytes.unwrap()) as f64;
@@ -337,12 +337,12 @@ impl DataRecord {
             },
             DibDataType::Data32BitInteger => {
                 if bytes.len() != 4 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 4], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = i32::from_le_bytes(bytes.unwrap()) as f64;
@@ -351,12 +351,12 @@ impl DataRecord {
             },
             DibDataType::Data32BitReal => {
                 if bytes.len() != 4 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 4], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = f32::from_le_bytes(bytes.unwrap()) as f64;
@@ -365,12 +365,12 @@ impl DataRecord {
             },
             DibDataType::Data48BitInteger => {
                 if bytes.len() != 6 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 6], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_48_to_int_64(&bytes.unwrap()) as f64;
@@ -379,12 +379,12 @@ impl DataRecord {
             },
             DibDataType::Data64BitInteger => {
                 if bytes.len() != 8 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 8], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = i64::from_le_bytes(bytes.unwrap()) as f64;
@@ -393,19 +393,19 @@ impl DataRecord {
             },
             DibDataType::SelectionForReadout => {
                 if bytes.len() != 0 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 return Ok(None);
             },
             DibDataType::Data2DigitBCD => {
                 if bytes.len() != 1 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 1], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
@@ -414,12 +414,12 @@ impl DataRecord {
             },
             DibDataType::Data4DigitBCD => {
                 if bytes.len() != 2 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 2], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
@@ -428,12 +428,12 @@ impl DataRecord {
             },
             DibDataType::Data6DigitBCD => {
                 if bytes.len() != 3 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 3], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
@@ -442,12 +442,12 @@ impl DataRecord {
             },
             DibDataType::Data8DigitBCD => {
                 if bytes.len() != 4 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 4], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
@@ -456,12 +456,12 @@ impl DataRecord {
             },
             DibDataType::DataVariableLength => {
                 if bytes.len() != 1 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 1], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = u8::from_le_bytes(bytes.unwrap()) as f64;
@@ -470,12 +470,12 @@ impl DataRecord {
             },
             DibDataType::Data12DigitBCD => {
                 if bytes.len() != 6 {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let bytes: Result<[u8; 6], _> = bytes.try_into();
                 if bytes.is_err() {
-                    return Err(ParserError::DibCalculatorError);
+                    return Err(ParserError::DataRecordCalculatorError);
                 }
 
                 let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
