@@ -249,7 +249,7 @@ impl DataRecord {
         }
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::Numeric) {
-            let dataval: Result<Option<f64>, ParserError> = DibDataType::calculate_data(&data_record.dib.data_type, &data_record_data);
+            let dataval: Result<Option<f64>, ParserError> = Self::calculate_data(&data_record.dib.data_type, &data_record_data);
             if dataval.is_err() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
@@ -282,6 +282,231 @@ impl DataRecord {
         
         data_record.text_value = Some(array_bytes_to_hex_string(&data_record_data));
         return Ok(Some(data_record));
+    }
+
+    pub fn calculate_data(data_type: &DibDataType, bytes: &[u8]) -> Result<Option<f64>, ParserError> {
+        match data_type {
+            DibDataType::NoData => {
+                if bytes.len() != 0 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                return Ok(None);
+            }
+            DibDataType::Data8BitInteger => {
+                if bytes.len() != 1 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 1], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = i8::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            }
+            DibDataType::Data16BitInteger => {
+                if bytes.len() != 2 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 2], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = i16::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data24BitInteger => {
+                if bytes.len() != 3 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 3], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_24_to_int_32(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data32BitInteger => {
+                if bytes.len() != 4 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 4], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = i32::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data32BitReal => {
+                if bytes.len() != 4 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 4], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = f32::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data48BitInteger => {
+                if bytes.len() != 6 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 6], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_48_to_int_64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data64BitInteger => {
+                if bytes.len() != 8 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 8], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = i64::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::SelectionForReadout => {
+                if bytes.len() != 0 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                return Ok(None);
+            },
+            DibDataType::Data2DigitBCD => {
+                if bytes.len() != 1 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 1], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data4DigitBCD => {
+                if bytes.len() != 2 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 2], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data6DigitBCD => {
+                if bytes.len() != 3 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 3], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data8DigitBCD => {
+                if bytes.len() != 4 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 4], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::DataVariableLength => {
+                if bytes.len() != 1 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 1], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = u8::from_le_bytes(bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::Data12DigitBCD => {
+                if bytes.len() != 6 {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let bytes: Result<[u8; 6], _> = bytes.try_into();
+                if bytes.is_err() {
+                    return Err(ParserError::DibCalculatorError);
+                }
+
+                let value: f64 = array_bcd_to_u64(&bytes.unwrap()) as f64;
+
+                return Ok(Some(value));
+            },
+            DibDataType::SpecialFunctionManufacturerSpecific => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionManufacturerSpecificExtandedNextDatagram => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionIdleFilter => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionReserved0x3F => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionReserved0x4F => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionReserved0x5F => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionReserved0x6F => {
+                return Ok(None);
+            },
+            DibDataType::SpecialFunctionGlobalReadout => {
+                return Ok(None);
+            },
+        };
     }
 
     pub fn update_data_record_text_value(&mut self, str: &str) {
