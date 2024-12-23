@@ -43,10 +43,6 @@ impl DataRecord {
                 continue;
             }
             let data: &Vec<u8> = data_records.get(idx).unwrap().data.as_ref().unwrap();
-
-            if !data_records.get(idx).is_some_and(|x: &DataRecord| x.vib.is_some()) {
-                continue;
-            }
             let magnitude: Option<i8> = data_records.get(idx).unwrap().vib.as_ref().unwrap().magnitude;
             
             let mut buffer: VecDeque<u8> = VecDeque::new();
