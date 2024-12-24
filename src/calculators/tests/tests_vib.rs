@@ -43,7 +43,7 @@ fn test_6d_calculate_vib() {
     assert_eq!(vib.magnitude, Some(0));
 }
 #[test]
-fn test_7c_calculate_vib() {
+fn test_7c_01_48_calculate_vib() {
     let data: Vec<u8> = vec![0x7C, 0x01, 0x48];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
