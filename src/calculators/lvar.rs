@@ -128,7 +128,7 @@ impl Lvar {
                 lvar.text_value = Some(value_text.unwrap());
             }
             else {
-                lvar.text_value = Some(array_bytes_to_hex_string(&value_bytes));
+                lvar.text_value = array_bytes_to_hex_string(&value_bytes);
             }
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::PositiveBCDnumber &&

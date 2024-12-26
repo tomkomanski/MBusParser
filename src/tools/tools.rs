@@ -86,16 +86,20 @@ pub fn byte_to_hex_string(input: &u8) -> String {
     return output;
 }
 
-pub fn array_bytes_to_hex_string(input: &[u8]) -> String {
-    let mut output: String = String::new();
+pub fn array_bytes_to_hex_string(input: &[u8]) -> Option<String> {
+    
+    if !input.is_empty() {
+        let mut output: String = String::new();
 
-    for byte_opt in input.iter() {
-        output = output + "0x" + format!("{:02x}", byte_opt).to_uppercase().as_str() + " ";
+        for byte_opt in input.iter() {
+            output = output + "0x" + format!("{:02x}", byte_opt).to_uppercase().as_str() + " ";
+        }
+
+        let output: String = output.trim().to_string();
+        return Some(output);
     }
 
-    let output: String = output.trim().to_string();
-
-    return output;
+    return None;
 }
 
 pub trait OptionStringExt {

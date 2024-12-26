@@ -119,7 +119,7 @@ impl TelegramFormat {
         let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
-            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
         }
         
         while buffer.len() >= 18 {
@@ -128,7 +128,7 @@ impl TelegramFormat {
     
             let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
             if given_crc != calculated_crc {
-                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
+                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
             }
         }
         
@@ -148,7 +148,7 @@ impl TelegramFormat {
         let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
-            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
         }
     
         return Ok(());
@@ -171,7 +171,7 @@ impl TelegramFormat {
             let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
 
             if given_crc != calculated_crc {
-                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
+                return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
             }
         }
         
@@ -191,7 +191,7 @@ impl TelegramFormat {
         let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
-            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc), array_bytes_to_hex_string(&calculated_crc))));
+            return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
         }
     
         return Ok(());

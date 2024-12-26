@@ -75,11 +75,10 @@ impl DataRecord {
             data_record.dib.data_type == DibDataType::SpecialFunctionGlobalReadout {
 
             let data: Vec<u8> = data.drain(..).collect();
-            let data_hex: String = array_bytes_to_hex_string(&data);
-
+     
+            data_record.text_value = array_bytes_to_hex_string(&data);
             data_record.data = Some(data);
-            data_record.text_value = Some(data_hex);
-
+            
             return Ok(Some(data_record));
         }
 
@@ -280,7 +279,7 @@ impl DataRecord {
             return Ok(Some(data_record));
         }
         
-        data_record.text_value = Some(array_bytes_to_hex_string(&data_record_data));
+        data_record.text_value = array_bytes_to_hex_string(&data_record_data);
         return Ok(Some(data_record));
     }
 

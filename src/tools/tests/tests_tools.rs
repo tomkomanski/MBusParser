@@ -269,13 +269,13 @@ fn test_002_byte_to_hex_string() {
 #[test]
 fn test_001_vec_bytes_to_hex_string() {
     let byte: [u8; 3] = [0x10, 0x20, 0x30];  
-    let result: String = array_bytes_to_hex_string(&byte);
+    let result: String = array_bytes_to_hex_string(&byte).unwrap_or_default();
     assert_eq!(result, String::from("0x10 0x20 0x30"));
 }
 #[test]
 fn test_002_vec_bytes_to_hex_string() {
     let byte: [u8; 3] = [0x25, 0xAF, 0x7B];  
-    let result: String = array_bytes_to_hex_string(&byte);
+    let result: String = array_bytes_to_hex_string(&byte).unwrap_or_default();
     assert_eq!(result, String::from("0x25 0xAF 0x7B"));
 }
 #[test]
