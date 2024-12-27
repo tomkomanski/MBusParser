@@ -267,8 +267,8 @@ impl DataRecord {
             let base: f64 = 10.0;
             let mut data_val: f64 = dataval * base.powi(magnitude);
 
-            // round if data is not i64 and multiplier <= 10 and multiplier >= 0.001
-            if data_record.dib.data_type != DibDataType::Data64BitInteger && magnitude <= 1 && magnitude >= -3 {
+            // round if data is not i64 and multiplier <= 1 and multiplier >= 0.001
+            if data_record.dib.data_type != DibDataType::Data64BitInteger && magnitude <= 0 && magnitude >= -3 {
                 data_val = (data_val * 1000.0).round() / 1000.0;
             }
                    
