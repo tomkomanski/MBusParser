@@ -271,11 +271,14 @@ impl DataRecord {
             if data_record.dib.data_type != DibDataType::Data64BitInteger && magnitude <= 1 && magnitude >= -3 {
                 data_val = (data_val * 1000.0).round() / 1000.0;
             }
-
-            data_record.numeric_value = Some(data_val);
+                   
             if data_val.is_nan() {
                 data_record.comment = data_record.comment.concatenate_str("Numeric value is NaN");
             }
+            else {
+                data_record.numeric_value = Some(data_val);
+            }
+
             return Ok(Some(data_record));
         }
         
