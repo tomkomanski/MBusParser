@@ -153,7 +153,7 @@ impl ExtendedLinkLayer {
 
             }
 
-            if ((ecl & 0x08) >> 1) == 1 {
+            if ((ecl & 0x08) >> 3) == 1 {
                 if data.len() < 2 {
                     return Err(ParserError::ExtendedLinkLayerCalculatorError);
                 }
@@ -162,7 +162,7 @@ impl ExtendedLinkLayer {
                 extended_link_layer.length = Some(extended_link_layer.length.as_ref().unwrap() + 2);
             }
 
-            if ((ecl & 0x10) >> 1) == 1 {
+            if ((ecl & 0x10) >> 4) == 1 {
                 if data.len() < 1 {
                     return Err(ParserError::ExtendedLinkLayerCalculatorError);
                 }
