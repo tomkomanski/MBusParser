@@ -262,10 +262,10 @@ impl DataRecord {
             if magnitude.is_none() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
-            let magnitude: i8 = magnitude.unwrap();
+            let magnitude: i32 = magnitude.unwrap() as i32;
 
             let base: f64 = 10.0;
-            let mut data_val: f64 = dataval * base.powf(magnitude as f64);
+            let mut data_val: f64 = dataval * base.powi(magnitude);
 
             // round if data is not i64 and multiplier <= 10 and multiplier >= 0.001
             if data_record.dib.data_type != DibDataType::Data64BitInteger && magnitude <= 1 && magnitude >= -3 {

@@ -114,10 +114,10 @@ impl DataRecord {
                 if magnitude.is_none() {
                     break;
                 }
-                let magnitude: i8 = magnitude.unwrap();
+                let magnitude: i32 = magnitude.unwrap() as i32;
 
                 let base: f64 = 10.0;
-                element_value = element_value * base.powf(magnitude as f64);
+                element_value = element_value * base.powi(magnitude);
                 
                 // round if data is not i64 and multiplier <= 10 and multiplier >= 0.001
                 if element_data_type != DibDataType::Data64BitInteger && magnitude <= 1 && magnitude >= -3 {
