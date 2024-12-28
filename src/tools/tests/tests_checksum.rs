@@ -27,24 +27,24 @@ fn test_004_calculate_mbus_cs() {
 #[test]
 fn test_001_calculate_wmbus_crc() {
     let frame: Vec<u8> = vec![0x08, 0x01, 0x72, 0x40, 0x69, 0x00, 0x33, 0xE1, 0x0E, 0x03];
-    let cs: Result<Vec<u8>, ParserError> = calculate_wmbus_crc(&frame);
-    assert_eq!(cs.map(|s| s), Ok(vec![0xE2, 0x53]));
+    let cs: Result<[u8; 2], ParserError> = calculate_wmbus_crc(&frame);
+    assert_eq!(cs.map(|s| s), Ok([0xE2, 0x53]));
 }
 #[test]
 fn test_002_calculate_wmbus_crc() {
     let frame: Vec<u8> = vec![0x7A, 0x24, 0x10, 0x20, 0x05, 0xD5, 0xAB, 0x1B, 0x89, 0x40, 0x6F, 0xA0, 0x87, 0x6E, 0x3A, 0xA2];
-    let cs: Result<Vec<u8>, ParserError> = calculate_wmbus_crc(&frame);
-    assert_eq!(cs.map(|s| s), Ok(vec![0x29, 0x00]));
+    let cs: Result<[u8; 2], ParserError> = calculate_wmbus_crc(&frame);
+    assert_eq!(cs.map(|s| s), Ok([0x29, 0x00]));
 }
 #[test]
 fn test_003_calculate_wmbus_crc() {
     let frame: Vec<u8> = vec![0x97, 0x6A, 0xBD, 0xE8, 0x7E];
-    let cs: Result<Vec<u8>, ParserError> = calculate_wmbus_crc(&frame);
-    assert_eq!(cs.map(|s| s), Ok(vec![0xDC, 0x7E]));
+    let cs: Result<[u8; 2], ParserError> = calculate_wmbus_crc(&frame);
+    assert_eq!(cs.map(|s| s), Ok([0xDC, 0x7E]));
 }
 #[test]
 fn test_004_calculate_wmbus_crc() {
     let frame: Vec<u8> = vec![];
-    let cs: Result<Vec<u8>, ParserError> = calculate_wmbus_crc(&frame);
+    let cs: Result<[u8; 2], ParserError> = calculate_wmbus_crc(&frame);
     assert_eq!(cs.map(|s| s), Err(ParserError::WmbusCrcCalculationError));
 }

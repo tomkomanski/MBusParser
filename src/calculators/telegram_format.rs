@@ -96,7 +96,7 @@ impl TelegramFormat {
     
     fn validate_cs(data: &Vec<u8>) -> Result<(), ParserError> {
         let given_cs: u8 = data[data.len() -1];
-        let calculated_cs: u8 = calculate_mbus_cs(&data[..data.len() -1].to_vec())?;
+        let calculated_cs: u8 = calculate_mbus_cs(&data[..data.len() -1])?;
     
         if given_cs != calculated_cs {
             return Err(ParserError::MbusInvalidChecksum(format!("{} vs {}", byte_to_hex_string(&given_cs), byte_to_hex_string(&calculated_cs))));
@@ -114,9 +114,8 @@ impl TelegramFormat {
         }
     
         let data_block: Vec<u8> = buffer.drain(..10).collect();
-        let given_crc: Vec<u8> = buffer.drain(..2).collect();
-    
-        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        let given_crc: [u8; 2]  = [buffer.pop_front().unwrap(), buffer.pop_front().unwrap()];
+        let calculated_crc: [u8; 2] = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
             return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
@@ -124,9 +123,9 @@ impl TelegramFormat {
         
         while buffer.len() >= 18 {
             let data_block: Vec<u8> = buffer.drain(..16).collect();
-            let given_crc: Vec<u8> = buffer.drain(..2).collect();
-    
-            let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+            let given_crc: [u8; 2]  = [buffer.pop_front().unwrap(), buffer.pop_front().unwrap()];
+            let calculated_crc: [u8; 2] = calculate_wmbus_crc(&data_block)?;
+
             if given_crc != calculated_crc {
                 return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
             }
@@ -143,9 +142,8 @@ impl TelegramFormat {
         }
     
         let data_block: Vec<u8> = buffer.drain(..remaining_number_of_bytes -2).collect();
-        let given_crc: Vec<u8> = buffer.drain(..2).collect();
-    
-        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        let given_crc: [u8; 2]  = [buffer.pop_front().unwrap(), buffer.pop_front().unwrap()];
+        let calculated_crc: [u8; 2] = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
             return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
@@ -166,9 +164,8 @@ impl TelegramFormat {
         
         if buffer.len() >= 118 {
             let data_block: Vec<u8> = buffer.drain(..116).collect();
-            let given_crc: Vec<u8> = buffer.drain(..2).collect();
-    
-            let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+            let given_crc: [u8; 2]  = [buffer.pop_front().unwrap(), buffer.pop_front().unwrap()];
+            let calculated_crc: [u8; 2] = calculate_wmbus_crc(&data_block)?;
 
             if given_crc != calculated_crc {
                 return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
@@ -186,9 +183,8 @@ impl TelegramFormat {
         }
     
         let data_block: Vec<u8> = buffer.drain(..remaining_number_of_bytes -2).collect();
-        let given_crc: Vec<u8> = buffer.drain(..2).collect();
-    
-        let calculated_crc: Vec<u8> = calculate_wmbus_crc(&data_block)?;
+        let given_crc: [u8; 2]  = [buffer.pop_front().unwrap(), buffer.pop_front().unwrap()];
+        let calculated_crc: [u8; 2] = calculate_wmbus_crc(&data_block)?;
 
         if given_crc != calculated_crc {
             return Err(ParserError::WmbusInvalidCrc(format!("{} vs {}", array_bytes_to_hex_string(&given_crc).unwrap_or_default(), array_bytes_to_hex_string(&calculated_crc).unwrap_or_default())));
