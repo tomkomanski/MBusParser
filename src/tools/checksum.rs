@@ -38,7 +38,7 @@ pub fn calculate_wmbus_crc(data: &[u8]) -> Result<[u8; 2], ParserError> {
         });
 
         let tmp_crc: u16 = crc_val & 0xFFFF ^ xor_value;
-        let crc: [u8; 2] = tmp_crc.to_be_bytes().to_owned();
+        let crc: [u8; 2] = tmp_crc.to_be_bytes();
         return Ok(crc);
     }
 

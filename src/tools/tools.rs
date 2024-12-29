@@ -1,28 +1,17 @@
 use std::str;
 
-pub fn array_4_bcd_to_u32(arr: &[u8; 4]) -> u32 {
-    let mut output: u32 = 0;
-
-    for byte in arr.into_iter().rev() {
-        output = (output * 10) + ((byte >> 4) & 0xF) as u32;
-        output = (output * 10) + (byte & 0xF) as u32;
-    }
-
-    return output;
-}
-
-pub fn array_bcd_to_u64(arr: &[u8]) -> u64 {
+pub fn bcd_to_u64(arr: &[u8]) -> u64 {
     let mut output: u64 = 0;
 
-    for byte in arr.into_iter().rev() {
-        output = (output * 10) + ((byte >> 4) & 0xF) as u64;
-        output = (output * 10) + (byte & 0xF) as u64;
-    }
+    arr.iter().rev().for_each(|n: &u8| {
+        output = (output * 10) + ((n >> 4) & 0xF) as u64;
+        output = (output * 10) + (n & 0xF) as u64;
+    });
 
     return output;
 }
 
-pub fn array_24_to_int_32(arr: &[u8; 3]) -> i32 {
+pub fn array_24_to_int_32(arr: [u8; 3]) -> i32 {
     if (arr[2] & 0x80) >> 7 == 1 {
         return (((0xFF as u32) << 24) | ((arr[2] as u32) << 16) | ((arr[1] as u32) << 8) | (arr[0] as u32)) as i32;
     }
@@ -31,7 +20,7 @@ pub fn array_24_to_int_32(arr: &[u8; 3]) -> i32 {
     }
 }
 
-pub fn array_48_to_int_64(arr: &[u8; 6]) -> i64 {
+pub fn array_48_to_int_64(arr: [u8; 6]) -> i64 {
     if (arr[5] & 0x80) >> 7 == 1 {
         return (((0xFF as u64) << 56) | ((0xFF as u64) << 48) | ((arr[5] as u64) << 40) | ((arr[4] as u64)<< 32) | ((arr[3] as u64) << 24) | ((arr[2] as u64) << 16) | ((arr[1] as u64) << 8) | (arr[0] as u64)) as i64;
     }

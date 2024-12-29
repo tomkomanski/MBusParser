@@ -27,7 +27,7 @@ impl Serialize for Header {
 
         match &self.identification_number {
             Some(x) => {
-                state.serialize_field("Identification number", &array_4_bcd_to_u32(x))?;
+                state.serialize_field("Identification number", &bcd_to_u64(x))?;
             },
             None => {
                 state.serialize_field("Identification number", &Option::<[u8; 4]>::None)?;

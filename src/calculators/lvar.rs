@@ -134,12 +134,12 @@ impl Lvar {
         else if lvar_data_type_and_length.data_type == LvarDataType::PositiveBCDnumber &&
                 lvar_data_type_and_length.data_length >= 1 && lvar_data_type_and_length.data_length <= 9 {
 
-            lvar.numeric_value = Some(array_bcd_to_u64(&value_bytes) as f64);
+            lvar.numeric_value = Some(bcd_to_u64(&value_bytes) as f64);
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::NegativeBCDnumber && 
                 lvar_data_type_and_length.data_length >= 1 && lvar_data_type_and_length.data_length <= 9 {
 
-            lvar.numeric_value = Some((array_bcd_to_u64(&value_bytes) as f64) * -1.0);
+            lvar.numeric_value = Some((bcd_to_u64(&value_bytes) as f64) * -1.0);
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::BinaryNumber {
             let value_bytes_reversed: Vec<u8> = value_bytes.iter().copied().rev().collect();

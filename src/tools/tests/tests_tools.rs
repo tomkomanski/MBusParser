@@ -1,220 +1,220 @@
 use super::super::tools::*;
 
 #[test]
-fn test_001_array_bcd_to_u64() {
+fn test_001_bcd_to_u64() {
     let bytes: [u8; 1] = [0x55];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 55);
 }
 #[test]
-fn test_002_array_bcd_to_u64() {
+fn test_002_bcd_to_u64() {
     let bytes: [u8; 1] = [0x03];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3);
 }
 #[test]
-fn test_003_array_bcd_to_u64() {
+fn test_003_bcd_to_u64() {
     let bytes: [u8; 1] = [0xB0];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 110);
 }
 #[test]
-fn test_004_array_bcd_to_u64() {
+fn test_004_bcd_to_u64() {
     let bytes: [u8; 2] = [0x03, 0x00];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3);
 }
 #[test]
-fn test_005_array_bcd_to_u64() {
+fn test_005_bcd_to_u64() {
     let bytes: [u8; 2] = [0x03, 0x30];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3003);
 }
 #[test]
-fn test_006_array_bcd_to_u64() {
+fn test_006_bcd_to_u64() {
     let bytes: [u8; 2] = [0xA3, 0x30];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3103);
 }
 #[test]
-fn test_007_array_bcd_to_u64() {
+fn test_007_bcd_to_u64() {
     let bytes: [u8; 3] = [0x03, 0x30, 0x03];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 33003);
 }
 #[test]
-fn test_008_array_bcd_to_u64() {
+fn test_008_bcd_to_u64() {
     let bytes: [u8; 3] = [0x63, 0x32, 0x43];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 433263);
 }
 #[test]
-fn test_009_array_bcd_to_u64() {
+fn test_009_bcd_to_u64() {
     let bytes: [u8; 3] = [0xF3, 0x3D, 0x43];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 434453);
 }
 #[test]
-fn test_010_array_bcd_to_u64() {
+fn test_010_bcd_to_u64() {
     let bytes: [u8; 4] = [0x50, 0x56, 0x00, 0x00];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 5650);
 }
 #[test]
-fn test_011_array_bcd_to_u64() {
+fn test_011_bcd_to_u64() {
     let bytes: [u8; 4] = [0x12, 0x11, 0x07, 0x03];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3071112);
 }
 #[test]
-fn test_012_array_bcd_to_u64() {
+fn test_012_bcd_to_u64() {
     let bytes: [u8; 4] = [0x09, 0x05, 0x80, 0x98];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 98800509);
 }
 #[test]
-fn test_013_array_bcd_to_u64() {
+fn test_013_bcd_to_u64() {
     let bytes: [u8; 5] = [0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3333333333);
 }
 #[test]
-fn test_014_array_bcd_to_u64() {
+fn test_014_bcd_to_u64() {
     let bytes: [u8; 5] = [0x11, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3333333311);
 }
 #[test]
-fn test_015_array_bcd_to_u64() {
+fn test_015_bcd_to_u64() {
     let bytes: [u8; 5] = [0x11, 0x33, 0x33, 0x33, 0x55];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 5533333311);
 }
 #[test]
-fn test_016_array_bcd_to_u64() {
+fn test_016_bcd_to_u64() {
     let bytes: [u8; 6] = [0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 333333333333);
 }
 #[test]
-fn test_017_array_bcd_to_u64() {
+fn test_017_bcd_to_u64() {
     let bytes: [u8; 6] = [0x00, 0x33, 0x09, 0x33, 0x11, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 331133093300);
 }
 #[test]
-fn test_018_array_bcd_to_u64() {
+fn test_018_bcd_to_u64() {
     let bytes: [u8; 6] = [0xDF, 0x33, 0xAB, 0x33, 0x11, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 331134113445);
 }
 #[test]
-fn test_019_array_bcd_to_u64() {
+fn test_019_bcd_to_u64() {
     let bytes: [u8; 7] = [0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 33333333333333);
 }
 #[test]
-fn test_020_array_bcd_to_u64() {
+fn test_020_bcd_to_u64() {
     let bytes: [u8; 7] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 33333333333311);
 }
 #[test]
-fn test_021_array_bcd_to_u64() {
+fn test_021_bcd_to_u64() {
     let bytes: [u8; 7] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x22];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 22333333333311);
 }
 #[test]
-fn test_022_array_bcd_to_u64() {
+fn test_022_bcd_to_u64() {
     let bytes: [u8; 8] = [0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3333333333333333);
 }
 #[test]
-fn test_023_array_bcd_to_u64() {
+fn test_023_bcd_to_u64() {
     let bytes: [u8; 8] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 3333333333333311);
 }
 #[test]
-fn test_024_array_bcd_to_u64() {
+fn test_024_bcd_to_u64() {
     let bytes: [u8; 8] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x22];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 2233333333333311);
 }
 #[test]
-fn test_025_array_bcd_to_u64() {
+fn test_025_bcd_to_u64() {
     let bytes: [u8; 9] = [0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 333333333333333333);
 }
 #[test]
-fn test_026_array_bcd_to_u64() {
+fn test_026_bcd_to_u64() {
     let bytes: [u8; 9] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 333333333333333311);
 }
 #[test]
-fn test_027_array_bcd_to_u64() {
+fn test_027_bcd_to_u64() {
     let bytes: [u8; 9] = [0x11, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x22];
-    let bcd: u64 = array_bcd_to_u64(&bytes);
+    let bcd: u64 = bcd_to_u64(&bytes);
     assert_eq!(bcd, 223333333333333311);
 }
 #[test]
 fn test_001_array_24_to_int_32() {
     let bytes: [u8; 3] = [0xFF, 0xFF, 0xFF];
-    let value: i32 = array_24_to_int_32(&bytes);
+    let value: i32 = array_24_to_int_32(bytes);
     println!("{}", value);
     assert_eq!(value, -1);
 }
 #[test]
 fn test_002_array_24_to_int_32() {
     let bytes: [u8; 3] = [0xFF, 0xFF, 0x7F];
-    let value: i32 = array_24_to_int_32(&bytes);
+    let value: i32 = array_24_to_int_32(bytes);
     println!("{}", value);
     assert_eq!(value, 8388607);
 }
 #[test]
 fn test_003_array_24_to_int_32() {
     let bytes: [u8; 3] = [0x01, 0x00, 0x80];
-    let value: i32 = array_24_to_int_32(&bytes);
+    let value: i32 = array_24_to_int_32(bytes);
     println!("{}", value);
     assert_eq!(value, -8388607);
 }
 #[test]
 fn test_004_array_24_to_int_32() {
     let bytes: [u8; 3] = [0xED, 0xCB, 0x5D];
-    let value: i32 = array_24_to_int_32(&bytes);
+    let value: i32 = array_24_to_int_32(bytes);
     println!("{}", value);
     assert_eq!(value, 6147053);
 }
 #[test]
 fn test_001_array_48_to_int_64() {
     let bytes: [u8; 6] = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
-    let value: i64 = array_48_to_int_64(&bytes);
+    let value: i64 = array_48_to_int_64(bytes);
     println!("{}", value);
     assert_eq!(value, -1);
 }
 #[test]
 fn test_002_array_48_to_int_64() {
     let bytes: [u8; 6] = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F];
-    let value: i64 = array_48_to_int_64(&bytes);
+    let value: i64 = array_48_to_int_64(bytes);
     println!("{}", value);
     assert_eq!(value, 140737488355327);
 }
 #[test]
 fn test_003_array_48_to_int_64() {
     let bytes: [u8; 6] = [0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x00];
-    let value: i64 = array_48_to_int_64(&bytes);
+    let value: i64 = array_48_to_int_64(bytes);
     println!("{}", value);
     assert_eq!(value, 33554431);
 }
 #[test]
 fn test_004_array_48_to_int_64() {
     let bytes: [u8; 6] = [0x00, 0xA7, 0x00, 0x00, 0x00, 0x00];
-    let value: i64 = array_48_to_int_64(&bytes);
+    let value: i64 = array_48_to_int_64(bytes);
     println!("{}", value);
     assert_eq!(value, 42752);
 }
