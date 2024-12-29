@@ -82,6 +82,7 @@ impl ExtendedLinkLayer {
         if extended_link_layer_type == ExtendedLinkLayerType::None {
             extended_link_layer.extended_link_layer_type = extended_link_layer_type;
             extended_link_layer.length = Some(length);
+            
             return Ok(extended_link_layer);
         }
         else if extended_link_layer_type == ExtendedLinkLayerType::I {

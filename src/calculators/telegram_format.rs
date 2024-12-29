@@ -22,6 +22,7 @@ impl TelegramFormat {
 
         if data.len() == 5 && data[0] == 0x10 && data[4] == 0x16 {
             Self::validate_cs(&data[1..data.len() -1].to_vec())?;
+            
             return Err(ParserError::TelegramFormatNotSupported);
         }
 

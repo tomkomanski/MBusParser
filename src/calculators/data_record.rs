@@ -48,6 +48,7 @@ impl Serialize for DataRecord {
 impl DataRecord {
     pub fn calculate_data_record(data: &mut VecDeque<u8>, manufacturer: &Option<[u8; 2]>) -> Result<Option<DataRecord>, ParserError>{
         let dib: Result<Dib, ParserError> = Dib::new(data);
+
         if dib.is_err() {
             return Err(dib.unwrap_err());
         }
@@ -75,7 +76,6 @@ impl DataRecord {
             data_record.dib.data_type == DibDataType::SpecialFunctionGlobalReadout {
 
             let data: Vec<u8> = data.drain(..).collect();
-     
             data_record.text_value = array_bytes_to_hex_string(&data);
             data_record.data = Some(data);
             
@@ -83,9 +83,11 @@ impl DataRecord {
         }
 
         let vib: Result<Vib, ParserError> = Vib::new(data, manufacturer);
+
         if vib.is_err() {
             return Err(vib.unwrap_err());
         }
+
         data_record.vib = Some(vib.unwrap());
 
         if data.len() < data_record.dib.data_length as usize {
@@ -107,6 +109,7 @@ impl DataRecord {
                 let day: u8 = data_record_data[0] & 0x1F;
                 let month: u8 = data_record_data[1] & 0x0F;
                 let mut year: u16 = (((data_record_data[0] & 0xE0) >> 5) | ((data_record_data[1] & 0xF0) >> 1)) as u16;
+
                 if year <= 80 {
                     year += 2000; 
                 }
@@ -133,7 +136,6 @@ impl DataRecord {
                 let second: u8 = data_record_data[0] & 0x3F;
                 let minute: u8 = data_record_data[1] & 0x3F;
                 let hour: u8 = data_record_data[2] & 0x1F;
-            
                 data_record.text_value = Some(format!("{}:{:02}:{:02}", hour, minute, second));
             }
 
@@ -142,19 +144,23 @@ impl DataRecord {
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::DataTypeFJIM) && data_record.dib.data_type == DibDataType::Data32BitInteger {                  
             let iv: u8 = (data_record_data[0] & 0x80) >> 7;
+
             if iv == 1 {
                 data_record.comment = data_record.comment.concatenate_str("Invalid date value");
             }
             else {
                 let summer_time_tag: u8 = (data_record_data[1] & 0x80) >> 7;
+
                 if summer_time_tag == 1 {
                     data_record.comment = data_record.comment.concatenate_str("Summer time");
                 }
+
                 let minute: u8 = data_record_data[0] & 0x3F;
                 let hour: u8 = data_record_data[1] & 0x1F;
                 let day: u8 = data_record_data[2] & 0x1F;
                 let month: u8 = data_record_data[3] & 0x0F;
                 let mut year: u16 = (((data_record_data[2] & 0xE0) >> 5) | ((data_record_data[3] & 0xF0) >> 1)) as u16;
+
                 if year <= 80 {
                    year += 2000; 
                 }
@@ -171,21 +177,23 @@ impl DataRecord {
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::DataTypeFJIM) && data_record.dib.data_type == DibDataType::Data48BitInteger {
             let iv: u8 = (data_record_data[0] & 0x80) >> 7;
+
             if iv == 1 {
                 data_record.comment = data_record.comment.concatenate_str("Invalid date value");
             }
             else {
                 let summer_time_tag: u8 = (data_record_data[0] & 0x40) >> 6;
+
                 if summer_time_tag == 1 {
                     data_record.comment = data_record.comment.concatenate_str("Summer time");
                 }
+
                 let second: u8 = data_record_data[0] & 0x3F;
                 let minute: u8 = data_record_data[1] & 0x3F;
                 let hour: u8 = data_record_data[2] & 0x1F;
                 let day: u8 = data_record_data[3] & 0x1F;
                 let month: u8 = data_record_data[4] & 0x0F;
                 let year: u16 = 2000 + (((data_record_data[3] & 0xE0) >> 5) | ((data_record_data[4] & 0xF0) >> 1)) as u16;
-
                 data_record.text_value = Some(format!("{}-{:02}-{:02} {:02}:{:02}:{:02}", year, month, day, hour, minute, second));
             }
 
@@ -194,11 +202,12 @@ impl DataRecord {
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::DataTypeFJIM) && data_record.dib.data_type == DibDataType::DataVariableLength {
             let lvar: Result<Lvar, ParserError> = Lvar::new(data_record_data[0], data);
+
             if lvar.is_err() {
                 return Err(lvar.unwrap_err());
             }
-            let lvar: Lvar = lvar.unwrap();
 
+            let lvar: Lvar = lvar.unwrap();
             data_record.data = Some(lvar.data);
             data_record.numeric_value = lvar.numeric_value;
             data_record.text_value = lvar.text_value;
@@ -209,13 +218,13 @@ impl DataRecord {
         if (data_record.vib.as_ref().unwrap().data_type.as_ref().is_none() || 
                 data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x != &VibDataType::DataTypeFJIM)) && 
                 data_record.dib.data_type == DibDataType::DataVariableLength {
-
             let lvar: Result<Lvar, ParserError> = Lvar::new(data_record_data[0], data);
+
             if lvar.is_err() {
                 return Err(lvar.unwrap_err());
             }
-            let lvar: Lvar = lvar.unwrap();
 
+            let lvar: Lvar = lvar.unwrap();
             data_record.data = Some(lvar.data);
             data_record.numeric_value = lvar.numeric_value;
             data_record.text_value = lvar.text_value;
@@ -249,21 +258,26 @@ impl DataRecord {
 
         if data_record.vib.as_ref().unwrap().data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::Numeric) {
             let dataval: Result<Option<f64>, ParserError> = Self::calculate_data_value(&data_record.dib.data_type, &data_record_data);
+
             if dataval.is_err() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
+
             let dataval: Option<f64> = dataval.unwrap();
+
             if dataval.is_none() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
+
             let dataval: f64 = dataval.unwrap();
 
             let magnitude: Option<i8> = data_record.vib.as_ref().unwrap().magnitude;
+
             if magnitude.is_none() {
                 return Err(ParserError::DataRecordCalculatorError);
             }
-            let magnitude: i32 = magnitude.unwrap() as i32;
 
+            let magnitude: i32 = magnitude.unwrap() as i32;
             let base: f64 = 10.0;
             let mut data_val: f64 = dataval * base.powi(magnitude);
 
@@ -283,6 +297,7 @@ impl DataRecord {
         }
         
         data_record.text_value = array_bytes_to_hex_string(&data_record_data);
+
         return Ok(Some(data_record));
     }
 
@@ -303,6 +318,7 @@ impl DataRecord {
                 let mut array: [u8; 1] = [0; 1]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = i8::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             }
             DibDataType::Data16BitInteger => {
@@ -313,6 +329,7 @@ impl DataRecord {
                 let mut array: [u8; 2] = [0; 2]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = i16::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data24BitInteger => {
@@ -323,6 +340,7 @@ impl DataRecord {
                 let mut array: [u8; 3] = [0; 3]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = array_24_to_int_32(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data32BitInteger => {
@@ -333,6 +351,7 @@ impl DataRecord {
                 let mut array: [u8; 4] = [0; 4]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = i32::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data32BitReal => {
@@ -343,6 +362,7 @@ impl DataRecord {
                 let mut array: [u8; 4] = [0; 4]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = f32::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data48BitInteger => {
@@ -353,6 +373,7 @@ impl DataRecord {
                 let mut array: [u8; 6] = [0; 6]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = array_48_to_int_64(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data64BitInteger => {
@@ -363,6 +384,7 @@ impl DataRecord {
                 let mut array: [u8; 8] = [0; 8]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = i64::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::SelectionForReadout => {
@@ -378,6 +400,7 @@ impl DataRecord {
                 }
 
                 let value: f64 = bcd_to_u64(&bytes) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data4DigitBCD => {
@@ -386,6 +409,7 @@ impl DataRecord {
                 }
 
                 let value: f64 = bcd_to_u64(bytes) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data6DigitBCD => {
@@ -394,6 +418,7 @@ impl DataRecord {
                 }
 
                 let value: f64 = bcd_to_u64(bytes) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data8DigitBCD => {
@@ -402,6 +427,7 @@ impl DataRecord {
                 }
 
                 let value: f64 = bcd_to_u64(bytes) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::DataVariableLength => {
@@ -412,6 +438,7 @@ impl DataRecord {
                 let mut array: [u8; 1] = [0; 1]; 
                 array.copy_from_slice(bytes);
                 let value: f64 = u8::from_le_bytes(array) as f64;
+
                 return Ok(Some(value));
             },
             DibDataType::Data12DigitBCD => {
@@ -420,6 +447,7 @@ impl DataRecord {
                 }
 
                 let value: f64 = bcd_to_u64(bytes) as f64;
+                
                 return Ok(Some(value));
             },
             DibDataType::SpecialFunctionManufacturerSpecific => {

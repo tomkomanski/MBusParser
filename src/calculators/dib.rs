@@ -167,7 +167,6 @@ impl Dib {
         dib.function_field = Some(DibFunctionField::new(dib.dif_byte));
         dib.extension_bit = (dib.dif_byte & 0x80) >> 7 == 1;
         dib.storage_number = Some(((dib.dif_byte & 0x40) >> 6) as u32);
-
         let mut storage_number: u32 = dib.storage_number.unwrap();
         let mut subunit: u32 = 0;
         let mut tariff: u32 = 0;
@@ -179,18 +178,14 @@ impl Dib {
             }
 
             let dife_byte: u8 = data.pop_front().unwrap();
-
             dib.dife_bytes.push(dife_byte);
             dib.extension_bit = (dife_byte & 0x80) >> 7 == 1;
-
             let subunit_loop: u32 = ((dife_byte & 0x40) >> 6) as u32;
             let tariff_loop: u32 = ((dife_byte & 0x30) >> 4) as u32;
             let storage_number_loop: u32 = (dife_byte & 0x0F) as u32;
-
             subunit |= subunit_loop << loop_count;
             tariff |= tariff_loop << (loop_count * 2);
-            storage_number |= storage_number_loop << (loop_count * 4 + 1);
-            
+            storage_number |= storage_number_loop << (loop_count * 4 + 1);  
             loop_count += 1;
         }
 
@@ -207,6 +202,7 @@ impl Dib {
 impl DibFunctionField {
     fn new(byte: u8) -> DibFunctionField {
         let function_field: u8 = (byte & 0x30) >> 4;
+
         match function_field {
             0x00 => DibFunctionField::Instantaneous,
             0x01 => DibFunctionField::Maximum,
@@ -232,6 +228,7 @@ impl DibDataType {
         }
         else {
             let data_type: u8 = byte & 0x0F;
+            
             match data_type {
                 0x00 => DibDataType::NoData,
                 0x01 => DibDataType::Data8BitInteger,

@@ -27,19 +27,20 @@ impl PostProcess {
         if wireless_mbus_data_container_index.is_none() {
             return;
         }
-        let wireless_mbus_data_container_index: usize = wireless_mbus_data_container_index.unwrap();
-        
+
+        let wireless_mbus_data_container_index: usize = wireless_mbus_data_container_index.unwrap();   
         let wireless_mbus_data_container_data: Option<&Vec<u8>> = 
             datagram.data_record
                 .get_mut(wireless_mbus_data_container_index)
                 .unwrap()
                 .data
                 .as_ref();
+
         if wireless_mbus_data_container_data.is_none() {
             return;
         }
-        let wireless_mbus_data_container_data: &Vec<u8> = wireless_mbus_data_container_data.unwrap();
 
+        let wireless_mbus_data_container_data: &Vec<u8> = wireless_mbus_data_container_data.unwrap();
         let mut buffer: VecDeque<u8> = VecDeque::new();
         buffer.extend(wireless_mbus_data_container_data.iter());
     
@@ -64,10 +65,13 @@ impl PostProcess {
         };
 
         let extended_link_layer: Result<ExtendedLinkLayer, ParserError> = ExtendedLinkLayer::new(ci_field, &mut buffer);
+
         if extended_link_layer.is_err() {
             return;
         }
+
         let extended_link_layer: ExtendedLinkLayer = extended_link_layer.unwrap();
+
         if extended_link_layer.extended_link_layer_type != ExtendedLinkLayerType::None {
             if buffer.len() < 1 {
                 return;
@@ -76,9 +80,11 @@ impl PostProcess {
         }
 
         let header: Result<Header, ParserError> = Header::new(information.ci_field, &mut buffer);
+
         if header.is_err() {
             return;
         }
+
         let mut header: Header = header.unwrap();
     
         if header.header_type == HeaderType::None {
@@ -108,6 +114,7 @@ impl PostProcess {
                 iv[5] = identification_number[3];
                 iv[6] = version;
                 iv[7] = device_type;
+
                 for n in 8..16 {
                     iv[n] = header.access_number.unwrap();
                 }
@@ -115,6 +122,7 @@ impl PostProcess {
                 let mut encoded_data: Vec<u8> = buffer.drain(..).collect();
     
                 let decoded_data: Result<&[u8], aes::cipher::block_padding::UnpadError> = Aes128CbcDec::new(key.as_slice().into(), &iv.into()).decrypt_padded_mut::<NoPadding>(&mut encoded_data);
+
                 if decoded_data.is_ok() {
                     buffer.extend(decoded_data.unwrap());
                 }
@@ -123,7 +131,6 @@ impl PostProcess {
 
         if buffer.len() >= 2 && buffer[0] == 0x2F && buffer[1] == 0x2F {
             information.decryption_status = DecryptionStatus::Decrypted;
-    
             let mut last_record_number: u8 = 
             datagram.data_record
                 .iter()
@@ -133,9 +140,11 @@ impl PostProcess {
     
             while buffer.len() > 0 {
                 let data_record: Result<Option<DataRecord>, ParserError> = DataRecord::calculate_data_record(&mut buffer, &header.manufacturer);
+
                 if data_record.is_err() {
                     return;
                 }
+                
                 let data_record: Option<DataRecord> = data_record.unwrap();
     
                 if data_record.is_some() {
