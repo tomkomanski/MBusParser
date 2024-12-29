@@ -14,12 +14,13 @@ impl DataRecord {
         }
 
         let mut compact_profile_indexes: Vec<usize> = Vec::new();
-
         let mut index: usize = 0;
-        while index != data_records.len() {
+
+        while index < data_records.len() {
             if data_records[index].vib.as_ref().is_some_and(|x: &Vib| x.data_type.as_ref().is_some_and(|x: &VibDataType| x == &VibDataType::CompactProfile)) {
                 compact_profile_indexes.push(index);
             }
+
             index += 1;
         }
 
@@ -27,28 +28,27 @@ impl DataRecord {
             if !data_records.get(idx).is_some_and(|x: &DataRecord| x.dib.storage_number.is_some_and(|x: u32| x > 0)) {
                 continue;
             }
+
             let storage_number: u32 = data_records.get(idx).unwrap().dib.storage_number.unwrap();
 
             if !data_records.get(idx).is_some_and(|x: &DataRecord| x.dib.tariff.is_some()) {
                 continue;
             }
+            
             let tariff: u32 = data_records.get(idx).unwrap().dib.tariff.unwrap();
 
             if !data_records.get(idx).is_some_and(|x: &DataRecord| x.dib.subunit.is_some()) {
                 continue;
             }
+
             let subunit: u32 = data_records.get(idx).unwrap().dib.subunit.unwrap();
 
             if !data_records.get(idx).is_some_and(|x: &DataRecord| x.data.is_some()) {
                 continue;
             }
-            let data: &Vec<u8> = data_records.get(idx).unwrap().data.as_ref().unwrap();
 
-            if !data_records.get(idx).is_some_and(|x: &DataRecord| x.vib.is_some()) {
-                continue;
-            }
+            let data: &Vec<u8> = data_records.get(idx).unwrap().data.as_ref().unwrap();
             let magnitude: Option<i8> = data_records.get(idx).unwrap().vib.as_ref().unwrap().magnitude;
-            
             let mut buffer: VecDeque<u8> = VecDeque::new();
             buffer.extend(data.iter());
             
@@ -58,8 +58,7 @@ impl DataRecord {
 
             buffer.pop_front(); // remove lvar length
             let spacing_control_byte: u8 = buffer.pop_front().unwrap();
-            let spacing_value: u8 = buffer.pop_front().unwrap();
-            
+            let spacing_value: u8 = buffer.pop_front().unwrap();    
             let increment_mode: u8 = spacing_control_byte >> 6;
             let spacing_unit: u8 = (spacing_control_byte & 0x30) >> 4;
             let element_data_type: DibDataType = DibDataType::new(spacing_control_byte & 0x0F);
@@ -70,7 +69,6 @@ impl DataRecord {
             }
 
             let amount_of_elements: u8 = (buffer.len() as u8) / element_length;
-
             let base_time_record: Option<&DataRecord> = 
                 data_records
                     .iter()
@@ -82,13 +80,15 @@ impl DataRecord {
             if !base_time_record.is_some_and(|x: &DataRecord| x.text_value.is_some()) {
                 continue;
             }
+
             let base_time: &str = base_time_record.as_ref().unwrap().text_value.as_ref().unwrap().as_str();   
             let base_time: Result<NaiveDateTime, ParseError> = NaiveDateTime::parse_from_str(base_time, "%Y-%m-%d %H:%M:%S");
+
             if base_time.is_err() {
                 continue;
             }
-            let base_time: NaiveDateTime = base_time.unwrap();
 
+            let base_time: NaiveDateTime = base_time.unwrap();
             let base_value_record: Option<&DataRecord> = 
                 data_records
                     .iter()
@@ -100,31 +100,34 @@ impl DataRecord {
             if !base_value_record.is_some_and(|x: &DataRecord| x.numeric_value.is_some()) {
                 continue;
             }
+
             let mut base_value: f64 = base_value_record.as_ref().unwrap().numeric_value.unwrap();
- 
             let mut text: String = String::new();
+
             for n in 1..=amount_of_elements {
                 if (buffer.len() as u8) < element_length {
                     break;
                 }
                 
                 let element_data_bytes: Vec<u8> = buffer.drain(..element_length as usize).collect();
-                let element_value: Result<Option<f64>, ParserError> = DibDataType::calculate_data(&element_data_type, &element_data_bytes);
+                let element_value: Result<Option<f64>, ParserError> = DataRecord::calculate_data_value(&element_data_type, &element_data_bytes);
+
                 if !element_value.as_ref().is_ok_and(|x: &Option<f64>| x.is_some()) {
                     break;
                 }
+
                 let mut element_value: f64 = element_value.unwrap().unwrap();
 
                 if magnitude.is_none() {
                     break;
                 }
-                let magnitude: i8 = magnitude.unwrap();
 
+                let magnitude: i32 = magnitude.unwrap() as i32;
                 let base: f64 = 10.0;
-                element_value = element_value * base.powf(magnitude as f64);
+                element_value = element_value * base.powi(magnitude);
                 
-                // round if data is not i64 and multiplier <= 10 and multiplier >= 0.001
-                if element_data_type != DibDataType::Data64BitInteger && magnitude <= 1 && magnitude >= -3 {
+                // round if data is not i64 and multiplier <= 1 and multiplier >= 0.001
+                if element_data_type != DibDataType::Data64BitInteger && magnitude <= 0 && magnitude >= -3 {
                     element_value = (element_value * 1000.0).round() / 1000.0;
                 }
 
@@ -146,6 +149,7 @@ impl DataRecord {
 
                 // Calculate element datetime according to spacing unit and spacing value
                 let mut date_time: NaiveDateTime = base_time;  
+                
                 if spacing_value == 0 {
                     // Not spacing in time, do nothing
                 }

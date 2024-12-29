@@ -27,7 +27,7 @@ impl Serialize for Header {
 
         match &self.identification_number {
             Some(x) => {
-                state.serialize_field("Identification number", &array_4_bcd_to_u32(x))?;
+                state.serialize_field("Identification number", &bcd_to_u64(x))?;
             },
             None => {
                 state.serialize_field("Identification number", &Option::<[u8; 4]>::None)?;
@@ -137,7 +137,6 @@ impl Header {
     fn get_manufacturer(&self) -> Option<String> {
         if let Some(bytes) = self.manufacturer {
             let input: u16 = u16::from_le_bytes(bytes.clone());
-
             let first_letter: char = ((input / (32 * 32)) + 64) as u8 as char;
             let second_letter: char = (((input % (32 * 32)) / 32) + 64) as u8 as char;
             let third_letter: char = ((input % 32) + 64) as u8 as char;
@@ -161,7 +160,6 @@ impl Header {
     fn get_status_description(&self) -> Option<String> {
         if let Some(byte) = self.status {
             let mut status: String = String::new();
-
             let bit0: bool = ((byte >> 0) & 0x01) == 1;
             let bit1: bool = ((byte >> 1) & 0x01) == 1;
             let bit2: bool = ((byte >> 2) & 0x01) == 1;

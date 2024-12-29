@@ -35,10 +35,13 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
     };
 
     let extended_link_layer: Result<ExtendedLinkLayer, ParserError> = ExtendedLinkLayer::new(ci_field, &mut buffer);
+
     if extended_link_layer.is_err() {
         return Err(extended_link_layer.unwrap_err());
     }
+
     let extended_link_layer: ExtendedLinkLayer = extended_link_layer.unwrap();
+
     if extended_link_layer.extended_link_layer_type != ExtendedLinkLayerType::None {
         if buffer.len() < 1 {
             return Err(ParserError::LongFrameWmbusAError);
@@ -47,9 +50,11 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
     }
 
     let header: Result<Header, ParserError> = Header::new(information.ci_field, &mut buffer);
+
     if header.is_err() {
         return Err(header.unwrap_err());
     }
+
     let mut header: Header = header.unwrap();
 
     if header.header_type == HeaderType::None {
@@ -65,6 +70,7 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
     let mut aplication_layer: VecDeque<u8> = VecDeque::new();
 
     aplication_layer.extend(iter::repeat(0x00).take(header.get_length() as usize + 1)); // add zeroed ci field and header
+
     if extended_link_layer.extended_link_layer_type != ExtendedLinkLayerType::None {
         aplication_layer.extend(iter::repeat(0x00).take(extended_link_layer.length.unwrap() as usize + 1)); // add zeroed ci field and extended link layer
     }
@@ -72,16 +78,19 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
     aplication_layer.extend(buffer);
 
     let mut potentially_encoded_data: VecDeque<u8> = VecDeque::new();
+
     while aplication_layer.len() >= 18 {
         potentially_encoded_data.extend(aplication_layer.drain(..16).collect::<Vec<u8>>());
         aplication_layer.drain(..2); // remove crc
     }
+
     if aplication_layer.len() > 2 {
         aplication_layer.drain(aplication_layer.len() - 2..); // remove crc
         potentially_encoded_data.extend(aplication_layer.drain(..).collect::<Vec<u8>>());
     }
 
     potentially_encoded_data.drain(..header.get_length() as usize + 1); // remove zereoed ci field and header
+
     if extended_link_layer.extended_link_layer_type != ExtendedLinkLayerType::None {
         potentially_encoded_data.drain(..extended_link_layer.length.unwrap() as usize + 1); // remove zereoed ci field and extended link layer
     }
@@ -105,13 +114,14 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
             iv[5] = identification_number[3];
             iv[6] = version;
             iv[7] = device_type;
+
             for n in 8..16 {
                 iv[n] = header.access_number.unwrap();
             }
 
             let mut encoded_data: Vec<u8> = potentially_encoded_data.drain(..).collect();
-
             let decoded_data: Result<&[u8], aes::cipher::block_padding::UnpadError> = Aes128CbcDec::new(key.as_slice().into(), &iv.into()).decrypt_padded_mut::<NoPadding>(&mut encoded_data);
+
             if decoded_data.is_ok() {
                 buffer.extend(decoded_data.unwrap());
             }
@@ -122,14 +132,15 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
 
     if buffer.len() >= 2 && buffer[0] == 0x2F && buffer[1] == 0x2F {
         information.decryption_status = DecryptionStatus::Decrypted;
-
         let mut record_numer: u8 = 0;
 
         while buffer.len() > 0 {
             let data_record: Result<Option<DataRecord>, ParserError> = DataRecord::calculate_data_record(&mut buffer, &header.manufacturer);
+
             if data_record.is_err() {
                 return Err(data_record.unwrap_err());
             }
+            
             let data_record: Option<DataRecord> = data_record.unwrap();
 
             if data_record.is_some() {
@@ -140,6 +151,10 @@ pub fn parse(data: &Vec<u8>, key: &Vec<u8>) -> Result<Datagram, ParserError> {
             }
         }
     }
+
+    // Compact profile procedure
+    DataRecord::calculate_compact_profile(&mut data_records);
+    //
 
     let datagram: Datagram = Datagram {
         information: information,

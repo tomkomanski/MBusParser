@@ -5,8 +5,9 @@ use crate::calculators::vib::*;
 use crate::matrices::errors::*;
 use crate::matrices::result_models::*;
 use crate::frame_parsers::long_frame_wmbus_format_a;
+use crate::post_processing::post_processing::PostProcess;
 
-impl DataRecord {
+impl PostProcess {
     pub fn parse_ngp_manufacturer_specific_data(datagram: &mut Datagram, key: &Vec<u8>) {
         if datagram.data_record.is_empty() {
             return;
@@ -43,26 +44,30 @@ impl DataRecord {
         if manufacturer_specific_data_record.is_none() {
             return;
         }
+
         let manufacturer_specific_data: &DataRecord = manufacturer_specific_data_record.unwrap();
 
         if manufacturer_specific_data.data.is_none() {
             return;
         }
-        let data: &Vec<u8> = manufacturer_specific_data.data.as_ref().unwrap();
 
+        let data: &Vec<u8> = manufacturer_specific_data.data.as_ref().unwrap();
         let mut buffer: VecDeque<u8> = VecDeque::new();
         buffer.extend(data.iter());
 
         while buffer.len() > 0 {
             let new_record: Result<Option<DataRecord>, ParserError> = DataRecord::calculate_data_record(&mut buffer, &datagram.header.manufacturer);
+
             if new_record.is_err() {
                 return;
             }
+
             let new_record: Option<DataRecord> = new_record.unwrap();
 
             if new_record.is_none() {
                 continue;
             }
+
             let mut new_record: DataRecord = new_record.unwrap();
 
             //Rssi record
@@ -182,9 +187,11 @@ impl DataRecord {
                 let lvar_without_length: Vec<u8> = new_record.data.unwrap().drain(1..).collect();
 
                 let datagram_result: Result<Datagram, ParserError> = long_frame_wmbus_format_a::parse(&lvar_without_length, key);
+
                 if datagram_result.is_err() {
                     continue;
                 }
+                
                 let datagram_result: Datagram = datagram_result.unwrap();
 
                 for mut n in datagram_result.data_record {

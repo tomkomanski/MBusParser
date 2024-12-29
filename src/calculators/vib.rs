@@ -81,7 +81,6 @@ impl Vib {
         }
 
         let specific_manufacturer: Manufacturer = Manufacturer::new(manufacturer_bytes);
-
         let primary_vif: VifVife = VifVife::new_vif_primary(data.pop_front().unwrap());
 
         let mut vib: Vib = Vib {
@@ -110,7 +109,6 @@ impl Vib {
             }
             return Ok(vib);
         }
-        
         // VIFE extension table 0xEF after primary VIF
         else if vib.extension.is_some_and(|x: u8| x == 0xEF) {
             if !vib.get_extension_ef_after_primary_vif(data) {
@@ -154,9 +152,11 @@ impl Vib {
                 Manufacturer::Schneider => schneider::get_manufacturer_specific_vife_after_combinable_vife(data, &mut vib),
                 Manufacturer::Unknown => unknown::get_manufacturer_specific_vife_after_combinable_vife(data, &mut vib),
             };
+
             if !result {
                 return Err(ParserError::VibCalculatorError);
             }
+
             return Ok(vib);
         }
 
@@ -172,14 +172,15 @@ impl Vib {
             if data.len() < 1 {
                 return Err(ParserError::VibCalculatorError);
             }
-            let string_length: u8 = data.pop_front().unwrap();
 
+            let string_length: u8 = data.pop_front().unwrap();
             vib.vife_bytes.push(string_length);
+
             if data.len() < string_length as usize {
                 return Err(ParserError::VibCalculatorError);
             }
-            let text_bytes: Vec<u8> = data.drain(..string_length as usize).collect();
-            
+
+            let text_bytes: Vec<u8> = data.drain(..string_length as usize).collect();     
             vib.vife_bytes.extend(&text_bytes);
             let text_bytes_reversed: Vec<u8> = text_bytes.into_iter().rev().collect();
 
@@ -199,10 +200,9 @@ impl Vib {
         if data.len() < 1 {
             return false;
         }
-        let vife_byte: u8 = data.pop_front().unwrap();
-        
-        let vife: VifVife = VifVife::new_vife_ef(vife_byte);
 
+        let vife_byte: u8 = data.pop_front().unwrap();   
+        let vife: VifVife = VifVife::new_vife_ef(vife_byte);
         self.vife_bytes.push(vife_byte);
         self.extension = vife.extension;   
         self.data_type = vife.data_type;
@@ -217,10 +217,9 @@ impl Vib {
         if data.len() < 1 {
             return false;
         }
-        let vife_byte: u8 = data.pop_front().unwrap();
-        
-        let vife: VifVife = VifVife::new_vife_fb(vife_byte);
 
+        let vife_byte: u8 = data.pop_front().unwrap();     
+        let vife: VifVife = VifVife::new_vife_fb(vife_byte);
         self.vife_bytes.push(vife_byte);
         self.extension = vife.extension;   
         self.data_type = vife.data_type;
@@ -235,10 +234,9 @@ impl Vib {
         if data.len() < 1 {
             return false;
         }
-        let vife_byte: u8 = data.pop_front().unwrap();
-        
-        let vife: VifVife = VifVife::new_vife_fd(vife_byte);
 
+        let vife_byte: u8 = data.pop_front().unwrap();     
+        let vife: VifVife = VifVife::new_vife_fd(vife_byte);
         self.vife_bytes.push(vife_byte);
         self.extension = vife.extension;     
         self.data_type = vife.data_type;
@@ -253,10 +251,9 @@ impl Vib {
         if data.len() < 1 {
             return false;
         }
+
         let vife_byte: u8 = data.pop_front().unwrap();
-
         let vife: VifVife = VifVife::new_vife_combinable(vife_byte);
-
         self.vife_bytes.push(vife_byte);
         self.extension = vife.extension;
 
@@ -281,10 +278,9 @@ impl Vib {
         if data.len() < 1 {
             return false;
         }
-        let vife_byte: u8 = data.pop_front().unwrap();
-        
-        let vife: VifVife = VifVife::new_vife_combinable_fc(vife_byte);
 
+        let vife_byte: u8 = data.pop_front().unwrap();   
+        let vife: VifVife = VifVife::new_vife_combinable_fc(vife_byte);
         self.vife_bytes.push(vife_byte);
         self.extension = vife.extension; 
         self.description = (self.description.to_string() + " " + vife.description).trim().to_string();
@@ -296,6 +292,7 @@ impl Vib {
         if unit.is_some() {
             self.unit = unit.unwrap().to_string();
         }
+        
         if description.is_some() {
             self.description = description.unwrap().to_string();
         }

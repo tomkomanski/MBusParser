@@ -42,6 +42,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::TextString,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xC0..=0xC9 => {
@@ -50,6 +51,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::PositiveBCDnumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xD0..=0xD9 => {
@@ -58,6 +60,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::NegativeBCDnumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xE0..=0xEF => {
@@ -66,6 +69,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::BinaryNumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xF0..=0xF4 => {
@@ -74,6 +78,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::BinaryNumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xF5 => {
@@ -82,6 +87,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::BinaryNumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             0xF6 => {
@@ -90,6 +96,7 @@ impl LvarDataTypeAndLength {
                     data_type: LvarDataType::BinaryNumber,
                     data_length: length,
                 };
+
                 return Ok(lvar_data_type_and_length);
             },
             _ => {
@@ -102,9 +109,11 @@ impl LvarDataTypeAndLength {
 impl Lvar {
     pub fn new (lvar_first_byte: u8, data: &mut VecDeque<u8>) -> Result<Self, ParserError> {
         let lvar_data_type_and_length: Result<LvarDataTypeAndLength, ParserError> = LvarDataTypeAndLength::new(lvar_first_byte);
+
         if lvar_data_type_and_length.is_err() {
             return Err(lvar_data_type_and_length.unwrap_err());
         }
+
         let lvar_data_type_and_length: LvarDataTypeAndLength = lvar_data_type_and_length.unwrap();
 
         if data.len() < lvar_data_type_and_length.data_length as usize{
@@ -112,12 +121,10 @@ impl Lvar {
         }
 
         let mut lvar: Lvar = Lvar {..Lvar::default() };
-
         let value_bytes: Vec<u8> = data.drain(..lvar_data_type_and_length.data_length as usize).collect();
         let mut data_bytes: Vec<u8> = Vec::new();
         data_bytes.push(lvar_first_byte);
         data_bytes.extend(value_bytes.clone());
-
         lvar.data = data_bytes;
 
         if lvar_data_type_and_length.data_type == LvarDataType::TextString {
@@ -128,23 +135,21 @@ impl Lvar {
                 lvar.text_value = Some(value_text.unwrap());
             }
             else {
-                lvar.text_value = Some(array_bytes_to_hex_string(&value_bytes));
+                lvar.text_value = array_bytes_to_hex_string(&value_bytes);
             }
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::PositiveBCDnumber &&
                 lvar_data_type_and_length.data_length >= 1 && lvar_data_type_and_length.data_length <= 9 {
-
-            lvar.numeric_value = Some(array_bcd_to_u64(&value_bytes) as f64);
+            lvar.numeric_value = Some(bcd_to_u64(&value_bytes) as f64);
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::NegativeBCDnumber && 
                 lvar_data_type_and_length.data_length >= 1 && lvar_data_type_and_length.data_length <= 9 {
-
-            lvar.numeric_value = Some((array_bcd_to_u64(&value_bytes) as f64) * -1.0);
+            lvar.numeric_value = Some((bcd_to_u64(&value_bytes) as f64) * -1.0);
         }
         else if lvar_data_type_and_length.data_type == LvarDataType::BinaryNumber {
             let value_bytes_reversed: Vec<u8> = value_bytes.iter().copied().rev().collect();
-
             let mut binary_output: String = String::new();
+
             for n in 0..value_bytes_reversed.len() {
                 let binary: String = format!("{:b}", value_bytes_reversed[n]);
                 binary_output += binary.as_str();

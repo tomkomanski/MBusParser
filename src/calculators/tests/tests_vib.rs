@@ -43,7 +43,7 @@ fn test_6d_calculate_vib() {
     assert_eq!(vib.magnitude, Some(0));
 }
 #[test]
-fn test_7c_calculate_vib() {
+fn test_7c_01_48_calculate_vib() {
     let data: Vec<u8> = vec![0x7C, 0x01, 0x48];
     let mut buffer: VecDeque<u8> = VecDeque::new();
     buffer.extend(data.iter());
@@ -64,7 +64,7 @@ fn test_83_fc_10_calculate_vib() {
     let result: Result<Vib, ParserError> = Vib::new(&mut buffer, &None);
     let vib: Vib = result.unwrap();
     assert_eq!(vib.vif_byte, 0x83);
-    assert_eq!(vib.vife_bytes, vec![0xFc, 0x10]);
+    assert_eq!(vib.vife_bytes, vec![0xFC, 0x10]);
     assert_eq!(vib.data_type, Some(VibDataType::Numeric));
     assert_eq!(vib.unit, "Wh");
     assert_eq!(vib.description, "Energy Accumulation of abs value for both positive and negative contribution");
