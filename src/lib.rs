@@ -46,10 +46,9 @@ mod frame_parsers {
 }
 
 mod post_processing {
-    mod manufacturer_specific {
-        mod manufacturer_specific_data;
-    }
-    mod wireless_mbus_data_conteiner;
+    pub mod post_processing;
+    pub mod ngp_postprocess;
+    pub mod wireless_mbus_data_conteiner;
 }
 
 mod tools {

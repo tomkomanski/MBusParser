@@ -1,3 +1,4 @@
+use std::slice::Chunks;
 use std::str;
 
 pub fn bcd_to_u64(arr: &[u8]) -> u64 {
@@ -45,9 +46,9 @@ pub fn hex_string_to_byte_vector(input: &str) -> Option<Vec<u8>> {
         return None;
     }
 
-    let data_chunks: std::slice::Chunks<u8> = cleaned_data.as_bytes().chunks(2);
-
+    let data_chunks: Chunks<u8> = cleaned_data.as_bytes().chunks(2);
     let mut output: Vec<u8> = Vec::new();
+
     for slice in data_chunks {
         let byte_str: &str = match str::from_utf8(slice) {
             Ok(str) => str,

@@ -1,12 +1,11 @@
 use std::panic;
-use crate::calculators::data_record::*;
 use crate::calculators::telegram_format::*;
 use crate::frame_parsers::long_frame_mbus;
 use crate::frame_parsers::long_frame_wmbus_format_a;
 use crate::frame_parsers::long_frame_wmbus_format_b;
-use crate::matrices::device_type::*;
 use crate::matrices::errors::*;
 use crate::matrices::result_models::*;
+use crate::post_processing::post_processing::PostProcess;
 use crate::tools::tools::*;
 
 pub fn parse_telegram(frame: &str, decryption_key: &str) -> String {
@@ -47,17 +46,7 @@ pub fn parse_telegram(frame: &str, decryption_key: &str) -> String {
             else {
                 let mut datagram: Datagram = datagram_result.unwrap();
 
-                // Post-processing wireless M-Bus data container
-                DataRecord::parse_wireless_mbus_data_container(&mut datagram, &key);
-
-                // Post-processing manufacturer specific data
-                DataRecord::parse_ngp_manufacturer_specific_data(&mut datagram, &key);
-
-                // Post-processing humanize device type
-                if datagram.header.device_type.is_some() {
-                    datagram.header.device_type_hum = Some(DeviceType::new(datagram.header.device_type.unwrap()).to_string());
-                }
-
+                PostProcess::process(&mut datagram, &key);
                 parser_result.datagram = Some(datagram);
             }
         }

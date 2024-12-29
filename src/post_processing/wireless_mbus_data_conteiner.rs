@@ -8,10 +8,11 @@ use crate::calculators::vib::*;
 use crate::matrices::encryption_method::*;
 use crate::matrices::errors::*;
 use crate::matrices::result_models::*;
+use crate::post_processing::post_processing::PostProcess;
 
 type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
-impl DataRecord {
+impl PostProcess {
     pub fn parse_wireless_mbus_data_container(datagram: &mut Datagram, key: &Vec<u8>) {
         if datagram.data_record.is_empty() {
             return;
