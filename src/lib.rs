@@ -59,7 +59,7 @@ mod tools {
 use std::ffi::{c_char, CStr, CString};
 
 #[no_mangle]
-pub extern fn parse(frame_input: *const c_char, key_input: *const c_char) -> *mut c_char {
+pub extern "C" fn parse(frame_input: *const c_char, key_input: *const c_char) -> *mut c_char {
     let mut frame: &str = "";
     let mut key: &str = "";
 
@@ -96,7 +96,7 @@ pub extern fn parse(frame_input: *const c_char, key_input: *const c_char) -> *mu
 }
 
 #[no_mangle]
-pub extern fn release_resource(sp: *mut c_char) {
+pub extern "C" fn release_resource(sp: *mut c_char) {
     unsafe {
         if sp.is_null() {
             return;
